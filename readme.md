@@ -1,11 +1,13 @@
 # CDN скрипт для кальянного сервиса
 
+Скрипт автоматически подтягивает нужные зависимости (яндекс карты и jquery ui)
+
 ## Установка
 
 В заголовок страницы в тильде вставить 
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kolei/kalyandostavka@dev/js/kalyan.js" type="text/javascript">
+<script src="https://cdn.jsdelivr.net/gh/kolei/kalyandostavka@dev/js/kalyan.js" type="text/javascript"></script>
 ```
 
 ## Обновление
