@@ -1,0 +1,250 @@
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js"
+  			integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+            crossorigin="anonymous"></script>
+    <!--script src="https://cdn.jsdelivr.net/gh/kolei/kalyandostavka@dev/js/kalyan.js" type="text/javascript">
+    </script-->
+    <script src="js/kalyan.js" type="text/javascript"></script>
+    <style>
+        /*
+        .ui-autocomplete {
+            max-height: 150px;
+            overflow-x: hidden;
+            overflow-y: hidden;
+        }
+        html .ui-autocomplete {
+            height: 150px;
+        }*/
+    </style>
+</head>
+<body>
+    <script>
+        function onTilda1(){
+            let params=`<input type="hidden" name="phone" value="79276844169"/>
+                <input type="hidden" name="name" value="Евгений"/>
+                <input type="hidden" name="street" value="Ленинградское шоссе"/>
+                <input type="hidden" name="house" value="12а"/>
+                <input type="hidden" name="flat" value="1"/>
+                <input type="hidden" name="department" value="100000008"/>
+                <input type="hidden" name="total" value="1000"/>
+                <input type="hidden" name="delivery_time" value="07.10.2020 23:00"/>
+                <input type="hidden" name="payment" value="card"/>`;
+
+            params += `<input type="hidden" name="dish[]" value="3600000014|set Burgermen 3|1|1000|"/>`;
+
+            $(`<form action="https://kei.chaihona1.ru/eda-na-raione" method="POST">${params}</form>`).appendTo($(document.body)).submit();
+        }
+
+        function onTilda2(){
+            let params=`<input type="hidden" name="phone" value="79276844169"/>
+                <input type="hidden" name="name" value="Евгений"/>
+                <input type="hidden" name="street" value="Инженерная"/>
+                <input type="hidden" name="house" value="3"/>
+                <input type="hidden" name="flat" value="1"/>
+                <input type="hidden" name="department" value="100000109"/>
+                <input type="hidden" name="total" value="1500"/>
+                <input type="hidden" name="brand" value="100000014"/>
+                <input type="hidden" name="delivery_cost" value="700"/>
+                <input type="hidden" name="coment" value="комментарий\nвторая строка"/>
+                <input type="hidden" name="delivery_time" value="12.10.2020 23:00"/>
+                <input type="hidden" name="payment" value="card"/>`;
+
+            params += `<input type="hidden" name="dish[]" value="100007444|Чаша помело|1|800|"/>`;
+
+            $(`<form action="https://kei.chaihona1.ru/eda-na-raione" method="POST">${params}</form>`).appendTo($(document.body)).submit();
+        }
+
+    </script>	
+
+    <div id="root" style="display: none;">
+
+        <div class="t706__cartwin t706__cartwin_showed" style="opacity: 1;">        
+
+            <div class="t706__cartwin-products">
+                <div class="t706__product" data-cart-product-i="0">
+                    <div class="t706__product-title t-descr t-descr_sm">
+                        <a style="color: inherit" target="_blank" href="http://kalyanservice.tilda.ws/tproduct/212595158-657680352471-kalyan-na-chashe-dinya">
+                            Кальян на чаше дыня</a>
+                        <div style="opacity: 0.7; font-size: 12px; font-weight: 400;">100007424</div>
+                    </div>
+                    <div class="t706__product-plusminus t-descr t-descr_sm">
+                        <span class="t706__product-minus">
+                            <img src="https://static.tildacdn.com/lib/linea/c8eecd27-9482-6c4f-7896-3eb09f6a1091/arrows_circle_minus.svg" style="width:16px;height:16px;border:0;">
+                        </span>
+                        <span class="t706__product-quantity">1</span>
+                        <span class="t706__product-plus">
+                            <img src="https://static.tildacdn.com/lib/linea/c47d1e0c-6880-dc39-ae34-521197f7fba7/arrows_circle_plus.svg" style="width:16px;height:16px;border:0;">
+                        </span>
+                    </div>
+                    <div class="t706__product-amount t-descr t-descr_sm">2 000&nbsp;₽</div>
+                    <div class="t706__product-del">
+                        <img src="https://static.tildacdn.com/lib/linea/1bec3cd7-e9d1-2879-5880-19b597ef9f1a/arrows_circle_remove.svg" style="width:20px;height:20px;border:0;">
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="t706__cartwin-prodamount-wrap t-descr t-descr_sm" style="display: block;">
+                <div class="t706__cartwin-prodamount-mincntorder t706__minimal" style="display: none;">
+                    <span>Минимальное количество в заказе: 1</span>
+                </div>
+                <div class="t706__cartwin-prodamount-minorder t706__minimal" style="display: none;">
+                    <span>Минимальный заказ: 1 500&nbsp;₽</span>
+                </div> 
+                <span class="t706__cartwin-prodamount-label">Стоимость доставки:&nbsp;500&nbsp;₽<br>Сумма:&nbsp;</span>
+                <span class="t706__cartwin-prodamount">2500&nbsp;₽</span> 
+            </div>
+
+        <form id="form208707357" name="form208707357" role="form" action="" method="POST" data-formactiontype="2" 
+            data-inputbox=".t-input-group" class="t-form js-form-proccess t-form_inputs-total_7 " 
+            data-success-callback="t700_onSuccess" data-formsended-callback="t706_onSuccessCallback" 
+            data-formcart="y"> 
+            
+            <div class="js-successbox t-form__successbox t-text t-text_md" style="display:none;color:#ffffff;background-color:#7300ff;"></div> 
+            <div class="t-form__inputsbox"> 
+                <div class="t-input-group t-input-group_in" data-input-lid="1496239459190"> 
+                    <div class="t-input-title t-descr t-descr_md" data-redactor-toolbar="no" field="li_title__1496239459190">
+                        Адрес доставки</div> 
+                    <div class="t-input-block"> 
+                        <input type="text" name="street" class="t-input js-tilda-rule  ui-autocomplete-input" value="" 
+                            placeholder="Улица" data-tilda-req="1" 
+                            style="color:#000000; border:1px solid #cccccc; background-color:#ffffff; border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius: 8px;" 
+                            autocomplete="off"> 
+                            
+                        <div class="t-input-error" style="display: none;"></div> 
+                    </div> 
+                </div> 
+                <div class="t-input-group t-input-group_in" data-input-lid="1602070019014"> 
+                    <div class="t-input-block"> 
+                        <input type="text" name="house" class="t-input js-tilda-rule " value="" placeholder="Дом" data-tilda-req="1" 
+                            style="color:#000000; border:1px solid #cccccc; background-color:#ffffff; border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius: 8px;"> 
+                        <div class="t-input-error"></div> 
+                    </div> 
+                </div> 
+                <div class="t-input-group t-input-group_in" data-input-lid="1602070037407"> 
+                    <div class="t-input-block"> 
+                        <input type="text" name="flat" class="t-input js-tilda-rule " value="" placeholder="Квартира" 
+                            style="color:#000000; border:1px solid #cccccc; background-color:#ffffff; border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius: 8px;"> 
+                        <div class="t-input-error"></div> 
+                    </div> 
+                </div> 
+                <div class="t-input-group t-input-group_sb" data-input-lid="1602482581666"> 
+                    <div class="t-input-title t-descr t-descr_md" data-redactor-toolbar="no" field="li_title__1602482581666">
+                        Время доставки</div> 
+                    <div class="t-input-block"> 
+                        <div class="t-select__wrapper "> 
+                            <select name="time" class="t-select js-tilda-rule " data-tilda-req="1" 
+                                style="color:#000000; border:1px solid #cccccc; background-color:#ffffff; border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius: 8px;">
+                            </select> 
+                        </div> 
+                        <div class="t-input-error"></div> 
+                    </div> 
+                </div> 
+                <div class="t-input-group t-input-group_nm" data-input-lid="1594542553899"> 
+                    <div class="t-input-title t-descr t-descr_md" data-redactor-toolbar="no" field="li_title__1594542553899">
+                        Ваше имя</div> 
+                    <div class="t-input-block"> <input type="text" name="name" class="t-input js-tilda-rule " value="" 
+                        placeholder="Как к вам обращаться?" data-tilda-rule="name" 
+                        style="color:#000000; border:1px solid #cccccc; background-color:#ffffff; border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius: 8px;"> 
+                        <div class="t-input-error"></div> 
+                    </div> 
+                </div> 
+                <div class="t-input-group t-input-group_ph" data-input-lid="1496239478607"> 
+                    <div class="t-input-title t-descr t-descr_md" data-redactor-toolbar="no" field="li_title__1496239478607">
+                        Ваш телефон</div> 
+                    <div class="t-input-block"> 
+                        <input type="tel" name="phone" class="t-input js-tilda-rule js-tilda-mask " value="" 
+                            placeholder="+7(999)999-99-99" data-tilda-req="1" data-tilda-rule="phone" pattern="[0-9]*" 
+                            data-tilda-mask="+7 (999) 999-99-99" style="color:#000000; border:1px solid #cccccc; background-color:#ffffff; border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius: 8px;"> 
+                        <div class="t-input-error"></div> 
+                    </div> 
+                </div> 
+                <div class="t-input-group t-input-group_ta" data-input-lid="1594626946370"> 
+                    <div class="t-input-block"> 
+                        <textarea name="coment" class="t-input js-tilda-rule " placeholder="Ваши пожелания к заказу" 
+                            style="color:#000000; border:1px solid #cccccc; background-color:#ffffff; border-radius: 8px; -moz-border-radius: 8px; -webkit-border-radius: 8px;height:102px" rows="3"></textarea> 
+                        <div class="t-input-error"></div> 
+                    </div> 
+                </div>
+                <div class="t-input-group t-input-group_pm" style="margin: 40px 0;"> 
+                    <div class="t-input-title t-descr t-descr_md">Способ оплаты</div> 
+                    <div class="t-input-block"> 
+                        <div class="t-radio__wrapper t-radio__wrapper-payment" data-tilda-payment-variants-hook="y"> 
+                            <label class="t-radio__control t-text t-text_xs">
+                                <input type="radio" name="paymentsystem" value="cloudpayments" checked="checked" class="t-radio t-radio_payment" 
+                                    data-payment-variant-system="cloudpayments">
+                                <div class="t-radio__indicator" style="border-color:#7300ff"></div> 
+                                Картой онлайн </label> 
+                            <label class="t-radio__control t-text t-text_xs">
+                                <input type="radio" name="paymentsystem" value="cash" class="t-radio t-radio_payment" data-payment-variant-system="cash">
+                                <div class="t-radio__indicator" style="border-color:#7300ff"></div> 
+                                При получении </label> 
+                        </div> 
+                    </div>
+                </div>
+                <div class="t706__cartwin-totalamount-wrap t-descr t-descr_xl" style="display: block;">
+                    <div class="t706__cartwin-prodamount-mincntorder t706__minimal" style="display: none;">
+                        <span>Минимальное количество в заказе: 1</span>
+                    </div>
+                    <div class="t706__cartwin-prodamount-minorder t706__minimal" style="display: none;">
+                        <span>Минимальный заказ: 1 500&nbsp;₽</span>
+                    </div>
+                    <div class="t706__cartwin-totalamount-info" style="margin-top: 10px; font-size:14px; font-weight:400;"></div>
+                    <span class="t706__cartwin-totalamount-label">Стоимость доставки:&nbsp;500&nbsp;₽<br>Сумма:&nbsp;</span>
+                    <span class="t706__cartwin-totalamount">2500&nbsp;₽</span>
+                </div>
+                <div class="t-form__errorbox-middle"> 
+                    <div class="js-errorbox-all t-form__errorbox-wrapper" style="display:none;"> 
+                        <div class="t-form__errorbox-text t-text t-text_md"> 
+                            <p class="t-form__errorbox-item js-rule-error js-rule-error-all"></p> 
+                            <p class="t-form__errorbox-item js-rule-error js-rule-error-req">Обязательное поле</p> 
+                            <p class="t-form__errorbox-item js-rule-error js-rule-error-email">Проверьте email</p> 
+                            <p class="t-form__errorbox-item js-rule-error js-rule-error-name"></p> 
+                            <p class="t-form__errorbox-item js-rule-error js-rule-error-phone">Проверьте номер телефона</p> 
+                            <p class="t-form__errorbox-item js-rule-error js-rule-error-minlength" style="display: none;"></p> 
+                            <p class="t-form__errorbox-item js-rule-error js-rule-error-string" style="display: none;"></p> 
+                            <p data-rule-filled="true" class="t-form__errorbox-item js-rule-error js-rule-error-minorder" style="display: none;">Минимальный заказ: 1 500&nbsp;₽</p>
+                            <p data-rule-filled="true" class="t-form__errorbox-item js-rule-error js-rule-error-minquantity" style="display: none;">Минимальное количество в заказе: 1</p>
+                        </div> 
+                    </div>
+                </div> 
+                <div class="t-form__submit"> 
+                    <button type="submit" class="t-submit" style="color:#ffffff;background-color:#ff0044;border-radius:8px; -moz-border-radius:8px; -webkit-border-radius:8px;">
+                        Заказать</button> 
+                </div>  
+            </div> 
+            <div class="t-form__errorbox-bottom"> 
+                <div class="js-errorbox-all t-form__errorbox-wrapper" style="display:none;"> 
+                    <div class="t-form__errorbox-text t-text t-text_md"> 
+                        <p class="t-form__errorbox-item js-rule-error js-rule-error-all"></p> 
+                        <p class="t-form__errorbox-item js-rule-error js-rule-error-req">Обязательное поле</p> 
+                        <p class="t-form__errorbox-item js-rule-error js-rule-error-email">Проверьте email</p> 
+                        <p class="t-form__errorbox-item js-rule-error js-rule-error-name"></p> 
+                        <p class="t-form__errorbox-item js-rule-error js-rule-error-phone">Проверьте номер телефона</p> 
+                        <p class="t-form__errorbox-item js-rule-error js-rule-error-minlength" style="display: none;"></p> 
+                        <p class="t-form__errorbox-item js-rule-error js-rule-error-string" style="display: none;"></p> 
+                        <p data-rule-filled="true" class="t-form__errorbox-item js-rule-error js-rule-error-minorder" style="display: none;">Минимальный заказ: 1 500&nbsp;₽</p>
+                        <p data-rule-filled="true" class="t-form__errorbox-item js-rule-error js-rule-error-minquantity" style="display: none;">Минимальное количество в заказе: 1</p>
+                    </div> 
+                </div> 
+            </div> 
+            <div style="position: absolute; left: -5000px; bottom:0;"><input type="text" name="form-spec-comments" value="Its good" class="js-form-spec-comments" 
+                tabindex="-1">
+            </div>
+        </form>
+
+        </div>
+
+
+        <!--div class="ui-widget">
+            <label for="tags">Tags: </label>
+            <input id="tags">
+        </div>
+
+        <br/><button onclick="onTilda1();">Еда на районе</button>
+        <br/><br/><button onclick="onTilda2();">Кальян</button>
+        <br/><br/><button onclick="ygeo();">YGeo</button-->
+    </div>
+</body>

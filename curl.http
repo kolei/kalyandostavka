@@ -1,0 +1,22 @@
+### очистка кеша jsDelivr, нужно явно указывать TAG. 
+### Существующий тег можно удалить и создать в новом месте
+POST https://purge.jsdelivr.net
+Cache-Control: no-cache
+Content-Type: application/json
+
+{
+    "path":[
+        "/gh/kolei/kalyandostavka@dev/js/kalyan.js"
+    ]
+}
+
+### PROD
+POST https://purge.jsdelivr.net
+Cache-Control: no-cache
+Content-Type: application/json
+
+{
+    "path":[
+        "/gh/kolei/kalyandostavka@prod/js/kalyan.js"
+    ]
+}
