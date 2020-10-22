@@ -23,6 +23,19 @@ $(document).ready(function (){
     else if(window.location.pathname == '/success') processSuccess();
 
     function processRoot(){
+
+        let cssId = 'jQueryUI_CSS';  // you could encode the css path itself to generate id..
+        if (!document.getElementById(cssId))
+        {
+            let link  = document.createElement('link');
+            link.id   = cssId;
+            link.rel  = 'stylesheet';
+            link.type = 'text/css';
+            link.href = 'https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css';
+            link.media = 'all';
+            document.head.appendChild(link);
+        }
+
         if(typeof jQuery.ui == 'undefined'){
             let script = document.createElement('script');
             script.async = false;
