@@ -1,5 +1,6 @@
 $(document).ready(function (){
     var DEV_MODE = false;
+    window.BRAND_CODE = '100000014';
     if(window.location.hostname == 'kalyandostavka.ru')
         window.CHAIHONA_HOST = 'https://chaihona1.ru';
     else {
@@ -7,9 +8,8 @@ $(document).ready(function (){
         DEV_MODE = true;
     }
 
-    window.BRAND_CODE = '100000014';
+    console.log('v0.1, CHAIHONA_HOST = %s', window.CHAIHONA_HOST);
 
-    DEV_MODE && console.log('dev2, CHAIHONA_HOST = %s', window.CHAIHONA_HOST);
     DEV_MODE && console.log('PATH=%s', window.location.pathname);
 
     var ud = null;
@@ -21,8 +21,10 @@ $(document).ready(function (){
 
     if(window.location.pathname == '/' || window.location.pathname == '/shop') processRoot();
     else if(window.location.pathname == '/success') processSuccess();
+    else if(window.location.pathname == '/paymenterror' || window.location.pathname == '/paymenterror/') processPaymentError();
 
     function processRoot(){
+        ud = new UserData();
 
         let cssId = 'jQueryUI_CSS';  // you could encode the css path itself to generate id..
         if (!document.getElementById(cssId))
@@ -35,14 +37,14 @@ $(document).ready(function (){
             link.media = 'all';
             document.head.appendChild(link);
         }
-
+    
         if(typeof jQuery.ui == 'undefined'){
             let script = document.createElement('script');
             script.async = false;
             script.src = 'https://code.jquery.com/ui/1.12.1/jquery-ui.js';
             document.head.appendChild(script);
         }
-
+    
         if(typeof ymaps == 'undefined' || typeof ymaps.suggest == 'undefined'){
             DEV_MODE && console.log('ymaps or ymaps.suggest undefined, load script');
             let script = document.createElement('script');
@@ -50,24 +52,21 @@ $(document).ready(function (){
             script.onload = onYmapsReady;
             script.src = 'https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=9cf52b96-70cc-4eab-81a3-53ffdd4850e2';
             document.head.appendChild(script);
-        } else
-            onYmapsReady();
-
-
-        $('#root').show();
+        } 
+        else onYmapsReady();
 
         // добавляю СКРЫТОЕ поле для города
         $('#form208707357').append('<input type="hidden" name="city" value="Москва"/>');
 
-
-        ud = new UserData();
-
         priceObserver = new PriceObserver();
 
-        if(ud.props.street && ud.props.house){
-            // уже есть история - ищу рест
-            checkAdress();
-        }
+        //TODO: перенести в onYmapsReady
+
+        // улица может быть пустой
+        // if(ud.props.city && ud.props.house){
+        //     // уже есть история - ищу рест
+        //     checkAdress();
+        // }
        
         //TODO вывести информацию о невозможности оплаты онлайн - проверить
 
@@ -110,10 +109,12 @@ $(document).ready(function (){
                 
             </div>`);
 
+        // при ручной корректировке адрес инвалидный    
+        ud.el('street').change(function(){ ud.props.jsonAddress = null; });    
 
         // подписываюсь на события ухода с поля ввода адреса
         ud.el('street').blur(function(){ checkAdress(); });
-        ud.el('house').blur(function(){ checkAdress(); });
+        //ud.el('house').blur(function(){ checkAdress(); });
         
         // при смене типа оплаты меняю текст кнопки
         $('input:radio[name="paymentsystem"]').change(function() {
@@ -176,7 +177,8 @@ $(document).ready(function (){
             else
                 hideBottomError('js-rule-error-minorder');
             
-            if($('#chaihona_pay').attr('allow_pay') !== 'true')
+            //if($('#chaihona_pay').attr('allow_pay') !== 'true')
+            if(!ud.props.jsonAddress)
                 showError(null, 'Введите адрес доставки', 'js-rule-error-all');
 
             if (errorSet.size)
@@ -189,9 +191,9 @@ $(document).ready(function (){
             
             let params=`<input type="hidden" name="phone" value="${purePhone}"/>
                 <input type="hidden" name="name" value="${ud.props.name}"/>
-                <input type="hidden" name="city" value="${ud.props.city}"/>
-                <input type="hidden" name="street" value="${ud.props.street}"/>
-                <input type="hidden" name="house" value="${ud.props.house}"/>
+                <input type="hidden" name="city" value="${ud.props.jsonAddress.city}"/>
+                <input type="hidden" name="street" value="${ud.props.jsonAddress.street}"/>
+                <input type="hidden" name="house" value="${ud.props.jsonAddress.house}"/>
                 <input type="hidden" name="flat" value="${ud.props.flat}"/>
                 <input type="hidden" name="department" value="${department}"/>
                 <input type="hidden" name="total" value="${total_price}"/>
@@ -234,121 +236,180 @@ $(document).ready(function (){
 
     }
 
-    function processSuccess(){
+    function processPaymentError(){
+        let message = /message=([^&]+)/.exec(window.location.href)[1];
+        if(message)
+            $('div.t017__uptitle').text( decodeURI(message) );
+    }
 
+    function processSuccess(){
+        // вручную чистим корзину:
+        // - открываю корзину, блюда в нее добавляются только при открытии
+        // - всем блюдам жму "удалить"
+    
+        let orderNum = /order=([^&]+)/.exec(window.location.href)[1];
+        let orderElement = $('div.t-text:contains(Заказ)');
+        if (orderElement && orderNum){
+            orderElement.text(`Заказ № ${decodeURI(orderNum)} оформлен`);
+        }
+    
+        // если есть иконка корзины
+        let cart_showed = $('div.t706__carticon.t706__carticon_showed');
+    
+        if(cart_showed.length)
+        {
+            new ClassWatcher(
+                document.getElementsByClassName('t706__cartwin')[0], 
+                't706__cartwin_showed', 
+                function(){
+                    $('div.t706__product-del').each(function(){
+                        $(this).click();
+                    });
+                }, null);
+
+            // открываю корзину, чтобы прокликать на удаление все товары    
+            $('div.t706__carticon').click();
+        }
     }
 
     function onYmapsReady(){
-        DEV_MODE && console.log('ymaps ready');
+        DEV_MODE && console.log('ymaps loaded');
+        ymaps.ready(async function () {
+            DEV_MODE && console.log('ymaps ready');
 
-        const moscowBound = [[55.142627, 36.803259],[56.021281, 37.967682]];
+            const moscowBound = [[55.142627, 36.803259],[56.021281, 37.967682]];
 
-        $("input[name='street']").autocomplete({
-            // вызывается при вводе более 3-х символов, список формирую из ответов яндекса
-            source: async(request, response) => {
-                let items = await ymaps.suggest(request.term, { boundedBy: moscowBound, results: 7 });
-    
-                let arrayResult = [];
-                let arrayPromises = [];
-    
-                function pushGeoData(displayName, value, jsonData) {
-                    arrayResult.push({displayName: displayName, value: value, jsonData: jsonData});
-                }
-    
-                function getCustomHouse(value){
-                    var result = value.match(/[0-9]{1,3}[0-9а-я\/]{1,4}/i);
-                    if(result)
-                        return result[0];
-                    return "";
-                }
-    
-                items.forEach((element) => {
-                    if (!element.value.match(/.*подъезд.*/)) 
-                    {
-                        // можно и по одному await-ить, но параллельно быстрее
-                        arrayPromises.push( ymaps.geocode(element.value).then(gc=>{
-                            let displayName = "";
-                            let value = element.value;
-    
-                            let geoObject = gc.geoObjects.get(0);
-    
-                            if (geoObject && geoObject.getCountryCode() == "RU") {
-                                let city = geoObject.getLocalities()[0] || geoObject.getAdministrativeAreas()[0];
-                                let street = geoObject.getThoroughfare() || geoObject.getLocalities()[0];
-                                if(city == street && city != 'Зеленоград')
-                                    street = geoObject.getLocalities()[2];
-                                
-                                let jsonData = {
-                                    'city': city,
-                                    'street': street ? street : '',
-                                    'house': geoObject.getPremiseNumber() || getCustomHouse(value),
-                                };
-    
-                                //jsonData.house.replace("undefined", "");
-    
-                                value = value.replace(geoObject.getCountry()+", ", "");
-                                value = value.replace(geoObject.getAdministrativeAreas()[0]+", ", "");
-                                value = value.replace("undefined", "");
-                                // displayName = "<div class='yandex-map-address_info'>"+value+"</div><div class='yandex-map-localities_info'>"+geoObject.getCountry()+", "+geoObject.getLocalities()[0]+"</div>";
-                                // displayName = displayName.replace("undefined", "");
-    
-                                pushGeoData(displayName, value, jsonData);
-                            }
-                        }));
+            $("input[name='street']").autocomplete({
+                // вызывается при вводе более 3-х символов, список формирую из ответов яндекса
+                source: async(request, response) => {
+                    let items = await ymaps.suggest(request.term, { boundedBy: moscowBound, results: 7 });
+        
+                    let arrayResult = [];
+                    let arrayPromises = [];
+        
+                    items.forEach((element) => {
+                        if (!element.value.match(/.*подъезд.*/)) 
+                        {
+                            // можно и по одному await-ить, но параллельно быстрее
+                            arrayPromises.push( ymaps.geocode(element.value).then(gc=>{
+                                let res = prepeareGC(gc, element.value);
+
+                                if(res)
+                                    arrayResult.push( res );
+                            }));
+                        }
+                    });
+        
+                    // ждем, пока все запросы не обработаются
+                    await Promise.all(arrayPromises).then(function(){
+                        return ymaps.vow.resolve(arrayResult);
+                    });
+        
+                    //response( availableTags);
+                    response( arrayResult );
+                },
+                // при выборе варианта делю улицу и дом
+                select: function(event, ui){
+                    DEV_MODE && console.log('ui.item.jsonData = %s', JSON.stringify(ui.item.jsonData));
+
+                    ud.props.street = ui.item.value;
+                    ud.props.suggestedAdres = ui.item.value;
+                    if(ui.item.jsonData.house){
+                        ud.props.jsonAddress = ui.item.jsonData;
+                        checkAdress();
                     }
-                });
-    
-                // ждем, пока все запросы не обработаются
-                await Promise.all(arrayPromises).then(function(){
-                    return ymaps.vow.resolve(arrayResult);
-                });
-    
-                //response( availableTags);
-                response( arrayResult );
-            },
-            // при выборе варианта делю улицу и дом
-            select: function(event, ui){
-                DEV_MODE && console.log('ui.item.jsonData = %s', JSON.stringify(ui.item.jsonData));
-                // $("input[name='city']").val( ui.item.jsonData.city );
-                // $("input[name='street']").val( ui.item.jsonData.street );
-                // $("input[name='house']").val( ui.item.jsonData.house ); 
+                },
+                minLength: 3
+            });
 
-                if(ud){
-                    ud.props.city = ui.item.jsonData.city;
-                    ud.props.street = ui.item.jsonData.street;
-                    ud.props.house = ui.item.jsonData.house;
+            if(ud.props.suggestedAdres){
+                // разбираю запомненный адрес
+                let gc = await ymaps.geocode( ud.props.suggestedAdres );
+                let res = prepeareGC(gc, ud.props.suggestedAdres);
+                if(res){
+                    // есть валидный адрес
+                    DEV_MODE && console.log('prepared suggestedAdres: %s', JSON.stringify(res));
+                    if(res.jsonData.house){
+                        ud.props.jsonAddress = res.jsonData;
+                        checkAdress();
+                    }
                 }
-
-                // переопределяю выбор
-                ui.item.value = ui.item.jsonData.street;
-            },
-            minLength: 3
+            }
         });
     }
-   
+
+    function getCustomHouse(value){
+        var result = value.match(/[0-9]{1,3}[0-9а-я\/]{1,4}/i);
+        if(result)
+            return result[0];
+        return "";
+    }
+
+    function prepeareGC(gc, elementValue){
+        let displayName = "";
+        let value = elementValue;
+
+        let geoObject = gc.geoObjects.get(0);
+
+        if (geoObject && geoObject.getCountryCode() == "RU") {
+            let city = geoObject.getLocalities()[0] || geoObject.getAdministrativeAreas()[0];
+            let street = geoObject.getThoroughfare() || geoObject.getLocalities()[0];
+            if(city == street && city != 'Зеленоград')
+                street = geoObject.getLocalities()[2];
+            
+            let jsonData = {
+                'city': city,
+                'street': street ? street : '',
+                'house': geoObject.getPremiseNumber() || getCustomHouse(value),
+            };
+
+            //jsonData.house.replace("undefined", "");
+
+            value = value.replace(geoObject.getCountry()+", ", "");
+            value = value.replace(geoObject.getAdministrativeAreas()[0]+", ", "");
+            value = value.replace("undefined", "");
+            // displayName = "<div class='yandex-map-address_info'>"+value+"</div><div class='yandex-map-localities_info'>"+geoObject.getCountry()+", "+geoObject.getLocalities()[0]+"</div>";
+            // displayName = displayName.replace("undefined", "");
+
+            // pushGeoData(displayName, value, jsonData);
+            // function pushGeoData(displayName, value, jsonData) {
+            return {displayName, value, jsonData};
+            // }
+        }
+        return null;
+    }
+
     function pad(n){ return ('00' + n).slice(-2); }
 
     // функция проверки адреса
     async function checkAdress()
     {
+        // адрес изменили, но строка есть, возможно корректировали дом
+        if(!ud.props.jsonAddress){
+            let address = ud.el('street').val();
+            if(address && typeof ymaps.geocode != 'undefined'){
+                DEV_MODE && console.log('в адресе что-то изменилось, перепроверяю');
+                let gc = await ymaps.geocode( address );
+                let res = prepeareGC(gc, address);
+                if(res){
+                    // запоминаю то что ввели
+                    ud.props.suggestedAdres = address;
+                    if(res.jsonData.house)
+                        ud.props.jsonAddress = res.jsonData;
+                }
+            }
+        }
+
         // если поля заполнены 
-        if (ud.props.street && ud.props.house) {
-            // и изменились
+        if (ud.props.jsonAddress) {
 
-            // город заполняется отдельно
-            //ud.props.city = ud.el('city').val();
-
-            if (ud.props.street!=ud.props.oldStreet || ud.props.house!=ud.props.oldHouse) {
+            // if (ud.props.city!=ud.props.oldCity || ud.props.street!=ud.props.oldStreet || ud.props.house!=ud.props.oldHouse) {
                 let data = {
-                    city: ud.props.city,
-                    street: ud.props.street, 
-                    house: ud.props.house,
+                    city: ud.props.jsonAddress.city,
+                    street: ud.props.jsonAddress.street, 
+                    house: ud.props.jsonAddress.house,
                     brand: window.BRAND_CODE
                 };
-
-                // запоминаю предыдущие значения, чтобы не запрашивать, если ничего не поменялось
-                ud.props.oldStreet = ud.props.street;
-                ud.props.oldHouse = ud.props.house;
 
                 // перед новым запросом гашу старую ошибку
                 ud.el('street').parent().find('div.t-input-error').hide();
@@ -407,7 +468,7 @@ $(document).ready(function (){
                         }
                     }
                 });
-            }
+            // }
         }
     }
 
@@ -614,7 +675,7 @@ class UserData {
                 //this.oldStreet = this._street;
                 this._street = encodeURIComponent( value.trim() );
                 $("#form208707357 input[name='street']").val(this.street);
-                document.cookie = `street=${this._street}; max-age=31536000`;
+                //document.cookie = `street=${this._street}; max-age=31536000`;
             }
         },
         _house: '',
@@ -651,6 +712,26 @@ class UserData {
                 $("#form208707357 textarea[name='coment']").val(this.coment);
                 document.cookie = `coment=${this._coment}; max-age=31536000`;
             }
+        },
+        _jsonAddress: null, // хранит JSON объект возвращаемый geocode, либо NULL, если адрес меняли вручную
+        get jsonAddress(){
+            return this._jsonAddress;
+        },
+        set jsonAddress(value){
+            if(this._jsonAddress != value){
+                //console.log('adsress %s', value ? JSON.stringify(value) : 'invalid');
+                this._jsonAddress = value;
+            }
+        },
+        _suggestedAdres: '', // адрес, выбранный из предложений яндекса
+        get suggestedAdres(){
+            return decodeURIComponent( this._suggestedAdres );
+        },
+        set suggestedAdres(value){
+            if(value != this._suggestedAdres){
+                this._suggestedAdres = encodeURIComponent( value.trim() );
+                document.cookie = `suggestedAdres=${this._suggestedAdres}; max-age=31536000`;
+            }
         }
     }
     
@@ -675,14 +756,19 @@ class UserData {
         return $(`#form208707357 ${tag}[name='${elementName}']`);
     }
 
+    //onChangeAddress = null;
+
     constructor(){
         this.bindInput('phone');
         this.bindInput('name');
-        this.bindInput('city');
+        //this.bindInput('city');
         this.bindInput('street');
-        this.bindInput('house');
+        //this.bindInput('house');
         this.bindInput('flat');
         this.bindInput('coment', 'textarea');
+        this.props.suggestedAdres = this.getCookie('suggestedAdres');
+        if(this.props.suggestedAdres)
+            this.props.street = this.props.suggestedAdres;
     }
 
     getCookie(name) {

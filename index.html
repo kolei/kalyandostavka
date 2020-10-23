@@ -247,4 +247,11 @@
         <br/><br/><button onclick="onTilda2();">Кальян</button>
         <br/><br/><button onclick="ygeo();">YGeo</button-->
     </div>
+    <script>
+        $(document).ready(function (){
+            if(window.location.pathname == '/' || window.location.pathname == '/shop')         
+                $('#root').show();
+            //else if(window.location.pathname == '/success') processSuccess();
+        });
+    </script>
 </body>
