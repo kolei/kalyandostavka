@@ -8,7 +8,7 @@ $(document).ready(function (){
         DEV_MODE = true;
     }
 
-    console.log('v0.2, CHAIHONA_HOST = %s', window.CHAIHONA_HOST);
+    console.log('v0.3, CHAIHONA_HOST = %s', window.CHAIHONA_HOST);
 
     DEV_MODE && console.log('PATH=%s', window.location.pathname);
 
@@ -20,7 +20,7 @@ $(document).ready(function (){
     var errorSet = new Set();
 
     if(window.location.pathname == '/' || window.location.pathname == '/shop') processRoot();
-    else if(window.location.pathname == '/success') processSuccess();
+    else if(window.location.pathname == '/success' || window.location.pathname == '/success/') processSuccess();
     else if(window.location.pathname == '/paymenterror' || window.location.pathname == '/paymenterror/') processPaymentError();
 
     function processRoot(){
@@ -258,6 +258,7 @@ $(document).ready(function (){
     
         if(cart_showed.length)
         {
+            DEV_MODE && console.log('Корзина найдена - запускаю очистку');
             new ClassWatcher(
                 document.getElementsByClassName('t706__cartwin')[0], 
                 't706__cartwin_showed', 
@@ -269,6 +270,13 @@ $(document).ready(function (){
 
             // открываю корзину, чтобы прокликать на удаление все товары    
             $('div.t706__carticon').click();
+        } else {
+            DEV_MODE && console.log('Иконка корзины не найдена');
+            new ElementWatcher(null, null, function(){
+                $('div.t706__product-del').each(function(){
+                    $(this).click();
+                });
+            });
         }
     }
 
@@ -779,6 +787,58 @@ class UserData {
     }
 }
 
+// отслеживает появление элемента с заданным классом
+class ElementWatcher {
+    constructor(elementToWatch, classToWatch, callback) {
+        this.elementToWatch = elementToWatch ? elementToWatch.toUpperCase() : null;
+        this.classToWatch = classToWatch;
+        this.callback = callback;
+        this.observer = null
+        this.init();
+    }
+
+    init() {
+        this.observer = new MutationObserver(this.mutationCallback)
+        this.observe()
+    }
+
+    observe() {
+        this.observer.observe(document.body, { 
+            childList: true,
+            subtree: true,
+            attributes: true,
+            characterData: true
+        });
+    }
+
+    mutationCallback = mutationsList => {
+        for(let mutation of mutationsList) {
+            if (mutation.type === 'attributes') {
+                if(mutation.target == this.elementToWatch)
+                    console.log('changed attribyte "%s" for target "%s"', mutation.attributeName, mutation.target);
+            }
+            else if (mutation.type === 'characterData') {
+                console.log('changed element.data for target "%s"', mutation.target);
+            }
+            else if (mutation.type === 'childList') {
+                if(mutation.addedNodes && this.callback)
+                    this.callback();
+                    // mutation.addedNodes.forEach(node => {
+                    //     //для вложенных элементов отдельного срабатывания нет - перебираем
+                    //     if(node.nodeName == this.elementToWatch && )
+                    //         console.log('changed childList added node "%s" for target "%s"', node.nodeName, mutation.target);
+                    //     else {
+                    //     }
+                    // });
+            }
+            else 
+                console.log('unknown type "%s"', mutation.type);
+        }
+    }
+
+}
+
+// отслеживает появление у элемента заданного класса
 class ClassWatcher {
     constructor(targetNode, classToWatch, classAddedCallback, classRemovedCallback) {
         this.targetNode = targetNode
@@ -797,7 +857,7 @@ class ClassWatcher {
     }
 
     observe() {
-        this.observer.observe(this.targetNode, { attributes: true })
+        this.observer.observe(this.targetNode, { attributes: true });
     }
 
     disconnect() {
