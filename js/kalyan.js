@@ -8,7 +8,7 @@ $(document).ready(function (){
         DEV_MODE = true;
     }
 
-    console.log('v0.3, CHAIHONA_HOST = %s', window.CHAIHONA_HOST);
+    console.log('v0.4, CHAIHONA_HOST = %s', window.CHAIHONA_HOST);
 
     DEV_MODE && console.log('PATH=%s', window.location.pathname);
 
@@ -257,27 +257,30 @@ $(document).ready(function (){
         let cart_showed = $('div.t706__carticon.t706__carticon_showed');
     
         if(cart_showed.length)
-        {
-            DEV_MODE && console.log('Корзина найдена - запускаю очистку');
-            new ClassWatcher(
-                document.getElementsByClassName('t706__cartwin')[0], 
-                't706__cartwin_showed', 
-                function(){
-                    $('div.t706__product-del').each(function(){
-                        $(this).click();
-                    });
-                }, null);
-
-            // открываю корзину, чтобы прокликать на удаление все товары    
-            $('div.t706__carticon').click();
-        } else {
+            purgeBasket();
+        else {
             DEV_MODE && console.log('Иконка корзины не найдена');
             new ElementWatcher(null, null, function(){
+                let cart_showed = $('div.t706__carticon.t706__carticon_showed');
+                if(cart_showed.length)
+                    purgeBasket();
+            });
+        }
+    }
+
+    function purgeBasket(){
+        DEV_MODE && console.log('Корзина найдена - запускаю очистку');
+        new ClassWatcher(
+            document.getElementsByClassName('t706__cartwin')[0], 
+            't706__cartwin_showed', 
+            function(){
                 $('div.t706__product-del').each(function(){
                     $(this).click();
                 });
-            });
-        }
+            }, null);
+
+        // открываю корзину, чтобы прокликать на удаление все товары    
+        $('div.t706__carticon').click();
     }
 
     function onYmapsReady(){
