@@ -4,11 +4,11 @@ $(document).ready(function (){
     if(window.location.hostname == 'kalyandostavka.ru')
         window.CHAIHONA_HOST = 'https://chaihona1.ru';
     else {
-        window.CHAIHONA_HOST = 'https://wwwmk.dev.chaihona1.ru';
+        window.CHAIHONA_HOST = 'https://tilda.dev.chaihona1.ru';
         DEV_MODE = true;
     }
 
-    console.log('v0.1, CHAIHONA_HOST = %s', window.CHAIHONA_HOST);
+    console.log('v0.2, CHAIHONA_HOST = %s', window.CHAIHONA_HOST);
 
     DEV_MODE && console.log('PATH=%s', window.location.pathname);
 
