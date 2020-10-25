@@ -1,3 +1,5 @@
+window.script_version = 12;
+
 class UserData {
     props = {
         _name: '',
@@ -316,7 +318,6 @@ class ClassWatcher {
 $(document).ready(function ()
 {
     const moscowBound = [[55.142627, 36.803259],[56.021281, 37.967682]];
-    const version = 11;
 
     var DEV_MODE = true;
     window.BRAND_CODE = '100000014';
@@ -329,7 +330,7 @@ $(document).ready(function ()
     else 
         window.CHAIHONA_HOST = 'https://tilda.dev.chaihona1.ru';
 
-    console.log('v0.%s, CHAIHONA_HOST = %s', version, window.CHAIHONA_HOST);
+    console.log('v0.%s, CHAIHONA_HOST = %s', window.script_version, window.CHAIHONA_HOST);
 
     DEV_MODE && console.log('PATH=%s', window.location.pathname);
 
