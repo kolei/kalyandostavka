@@ -1,4 +1,4 @@
-window.script_version = 12;
+window.script_version = 0;
 
 class UserData {
     props = {
@@ -330,7 +330,7 @@ $(document).ready(function ()
     else 
         window.CHAIHONA_HOST = 'https://tilda.dev.chaihona1.ru';
 
-    console.log('v0.%s, CHAIHONA_HOST = %s', window.script_version, window.CHAIHONA_HOST);
+    console.log('v1.%s, CHAIHONA_HOST = %s', window.script_version, window.CHAIHONA_HOST);
 
     DEV_MODE && console.log('PATH=%s', window.location.pathname);
 
