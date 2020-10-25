@@ -7,12 +7,23 @@
 В заголовок страницы в тильде вставить 
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kolei/kalyandostavka@dev/js/kalyan.js" type="text/javascript"></script>
+<script>    
+    $(document).ready(function (){
+        $.ajax({
+            url: 'https://raw.githubusercontent.com/kolei/kalyandostavka/master/js/kalyan.js',
+            crossDomain: true,
+            cache: false, 
+            type: 'GET'
+        }).done(function(rawData){
+            let script = document.createElement("script");
+            script.text = rawData;
+            document.body.appendChild(script);
+        });
+    });
+</script>    
 ```
 
-## Обновление
-
-Сервис jsDelivr кеширует данные. Для сброса кеша есть АПИ (см. файл *curl.http* в этом репозитории), но нужно учитывать, что сброс работает только с ТЕГАМИ, т.е. ``@dev`` это не ветка в репозитории, а тег. Соответственно, ПЕРЕД сбросом кеша нужно УДАЛИТЬ старый тег и создать его же в актуальной версии репозитория.
+,где **master** - название ветки в репозитории
 
 # Changelog
 

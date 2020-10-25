@@ -20,3 +20,6 @@ Content-Type: application/json
         "/gh/kolei/kalyandostavka@prod/js/kalyan.js"
     ]
 }
+
+### 1555
+GET https://raw.githubusercontent.com/kolei/kalyandostavka/master/js/kalyan.js?_=3
