@@ -1,5 +1,160 @@
-$(document).ready(function (){
+class UserData {
+    props = {
+        _name: '',
+        get name(){ 
+            return decodeURIComponent( this._name );
+        },
+        set name(value){
+            if(this._name != value){
+                this._name = encodeURIComponent( value.trim() );
+                $("#form208707357 input[name='name']").val(this.name);
+                document.cookie = `name=${this._name}; max-age=31536000`;
+            }
+        },
+        _phone: '',
+        get phone(){ 
+            return decodeURIComponent( this._phone );
+        },
+        set phone(value){
+            if(this._phone != value){
+                this._phone = encodeURIComponent( value.trim() );
+                $("#form208707357 input[name='phone']").val(this.phone);
+                document.cookie = `phone=${this._phone}; max-age=31536000`;
+            }
+        },
+        _city: '',
+        oldCity: '',
+        get city(){
+            return decodeURIComponent( this._city ); 
+        },
+        set city(value){
+            if(this._city != value){
+                //this.oldCity = this._city;
+                this._city = encodeURIComponent( value.trim() );
+                $("#form208707357 input[name='city']").val(this.city);
+                document.cookie = `city=${this._city}; max-age=31536000`;
+            }
+        },
+        _street: '',
+        oldStreet: '',
+        get street(){ 
+            return decodeURIComponent( this._street ); 
+        },
+        set street(value){
+            if(this._street != value){
+                //this.oldStreet = this._street;
+                this._street = encodeURIComponent( value.trim() );
+                $("#form208707357 input[name='street']").val(this.street);
+                //document.cookie = `street=${this._street}; max-age=31536000`;
+            }
+        },
+        _house: '',
+        oldHouse: '',
+        get house(){ 
+            return decodeURIComponent( this._house );
+        },
+        set house(value){
+            if(this._house != value){
+                //this.oldHouse = this._house;
+                this._house = encodeURIComponent( value.trim() );
+                $("#form208707357 input[name='house']").val(this.house);
+                document.cookie = `house=${this._house}; max-age=31536000`;
+            }
+        },
+        _flat: '',
+        get flat(){
+            return decodeURIComponent( this._flat );
+        },
+        set flat(value){
+            if(this._flat != value){
+                this._flat = encodeURIComponent( value.trim() );
+                $("#form208707357 input[name='flat']").val(this.flat);
+                document.cookie = `flat=${this._flat}; max-age=31536000`;
+            }
+        },
+        _coment: '',
+        get coment(){
+            return decodeURIComponent( this._coment );
+        },
+        set coment(value){
+            if(this._coment != value){
+                this._coment = encodeURIComponent( value.trim() );
+                $("#form208707357 textarea[name='coment']").val(this.coment);
+                document.cookie = `coment=${this._coment}; max-age=31536000`;
+            }
+        },
+        _jsonAddress: null, // хранит JSON объект возвращаемый geocode, либо NULL, если адрес меняли вручную
+        get jsonAddress(){
+            return this._jsonAddress;
+        },
+        set jsonAddress(value){
+            if(this._jsonAddress != value){
+                //console.log('adsress %s', value ? JSON.stringify(value) : 'invalid');
+                this._jsonAddress = value;
+            }
+        },
+        _suggestedAdres: '', // адрес, выбранный из предложений яндекса
+        get suggestedAdres(){
+            return decodeURIComponent( this._suggestedAdres );
+        },
+        set suggestedAdres(value){
+            if(value != this._suggestedAdres){
+                this._suggestedAdres = encodeURIComponent( value.trim() );
+                document.cookie = `suggestedAdres=${this._suggestedAdres}; max-age=31536000`;
+            }
+        },
+        department: null
+    }
+    
+    /*
+    связывает поле ввода (input) со свойством
+    - при изменении записывается в куки
+    - при создании считывает из куки
+    */
+    bindInput(propName, tag = 'input'){
+        let value = $(`#form208707357 ${tag}[name='${propName}']`).val().trim();
+
+        // если поле пустое, то считать из куки
+        this.props[propName] = value ? value : this.getCookie( propName );
+
+        // при выходе с элемента запоминаю значение в куку
+        $(`#form208707357 ${tag}[name='${propName}']`).blur((event)=>{ 
+            this.props[propName] = $(event.currentTarget).val();
+        });
+    }
+
+    el(elementName, tag = 'input'){
+        return $(`#form208707357 ${tag}[name='${elementName}']`);
+    }
+
+    //onChangeAddress = null;
+
+    constructor(){
+        this.bindInput('phone');
+        this.bindInput('name');
+        //this.bindInput('city');
+        this.bindInput('street');
+        //this.bindInput('house');
+        this.bindInput('flat');
+        this.bindInput('coment', 'textarea');
+        this.props.suggestedAdres = this.getCookie('suggestedAdres');
+        if(this.props.suggestedAdres)
+            this.props.street = this.props.suggestedAdres;
+    }
+
+    getCookie(name) {
+        let matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : '';
+    }
+}
+
+$(document).ready(function ()
+{
     const moscowBound = [[55.142627, 36.803259],[56.021281, 37.967682]];
+    const version = 6;
+
     var DEV_MODE = true;
     window.BRAND_CODE = '100000014';
     if(window.location.hostname == 'kalyandostavka.ru'){
@@ -11,7 +166,7 @@ $(document).ready(function (){
     else 
         window.CHAIHONA_HOST = 'https://tilda.dev.chaihona1.ru';
 
-    console.log('v0.5, CHAIHONA_HOST = %s', window.CHAIHONA_HOST);
+    console.log('v0.%s, CHAIHONA_HOST = %s', version, window.CHAIHONA_HOST);
 
     DEV_MODE && console.log('PATH=%s', window.location.pathname);
 
@@ -650,158 +805,6 @@ class PriceObserver {
     }
 }
 
-
-class UserData {
-    props = {
-        _name: '',
-        get name(){ 
-            return decodeURIComponent( this._name );
-        },
-        set name(value){
-            if(this._name != value){
-                this._name = encodeURIComponent( value.trim() );
-                $("#form208707357 input[name='name']").val(this.name);
-                document.cookie = `name=${this._name}; max-age=31536000`;
-            }
-        },
-        _phone: '',
-        get phone(){ 
-            return decodeURIComponent( this._phone );
-        },
-        set phone(value){
-            if(this._phone != value){
-                this._phone = encodeURIComponent( value.trim() );
-                $("#form208707357 input[name='phone']").val(this.phone);
-                document.cookie = `phone=${this._phone}; max-age=31536000`;
-            }
-        },
-        _city: '',
-        oldCity: '',
-        get city(){
-            return decodeURIComponent( this._city ); 
-        },
-        set city(value){
-            if(this._city != value){
-                //this.oldCity = this._city;
-                this._city = encodeURIComponent( value.trim() );
-                $("#form208707357 input[name='city']").val(this.city);
-                document.cookie = `city=${this._city}; max-age=31536000`;
-            }
-        },
-        _street: '',
-        oldStreet: '',
-        get street(){ 
-            return decodeURIComponent( this._street ); 
-        },
-        set street(value){
-            if(this._street != value){
-                //this.oldStreet = this._street;
-                this._street = encodeURIComponent( value.trim() );
-                $("#form208707357 input[name='street']").val(this.street);
-                //document.cookie = `street=${this._street}; max-age=31536000`;
-            }
-        },
-        _house: '',
-        oldHouse: '',
-        get house(){ 
-            return decodeURIComponent( this._house );
-        },
-        set house(value){
-            if(this._house != value){
-                //this.oldHouse = this._house;
-                this._house = encodeURIComponent( value.trim() );
-                $("#form208707357 input[name='house']").val(this.house);
-                document.cookie = `house=${this._house}; max-age=31536000`;
-            }
-        },
-        _flat: '',
-        get flat(){
-            return decodeURIComponent( this._flat );
-        },
-        set flat(value){
-            if(this._flat != value){
-                this._flat = encodeURIComponent( value.trim() );
-                $("#form208707357 input[name='flat']").val(this.flat);
-                document.cookie = `flat=${this._flat}; max-age=31536000`;
-            }
-        },
-        _coment: '',
-        get coment(){
-            return decodeURIComponent( this._coment );
-        },
-        set coment(value){
-            if(this._coment != value){
-                this._coment = encodeURIComponent( value.trim() );
-                $("#form208707357 textarea[name='coment']").val(this.coment);
-                document.cookie = `coment=${this._coment}; max-age=31536000`;
-            }
-        },
-        _jsonAddress: null, // хранит JSON объект возвращаемый geocode, либо NULL, если адрес меняли вручную
-        get jsonAddress(){
-            return this._jsonAddress;
-        },
-        set jsonAddress(value){
-            if(this._jsonAddress != value){
-                //console.log('adsress %s', value ? JSON.stringify(value) : 'invalid');
-                this._jsonAddress = value;
-            }
-        },
-        _suggestedAdres: '', // адрес, выбранный из предложений яндекса
-        get suggestedAdres(){
-            return decodeURIComponent( this._suggestedAdres );
-        },
-        set suggestedAdres(value){
-            if(value != this._suggestedAdres){
-                this._suggestedAdres = encodeURIComponent( value.trim() );
-                document.cookie = `suggestedAdres=${this._suggestedAdres}; max-age=31536000`;
-            }
-        },
-        department: null
-    }
-    
-    /*
-    связывает поле ввода (input) со свойством
-    - при изменении записывается в куки
-    - при создании считывает из куки
-    */
-    bindInput(propName, tag = 'input'){
-        let value = $(`#form208707357 ${tag}[name='${propName}']`).val().trim();
-
-        // если поле пустое, то считать из куки
-        this.props[propName] = value ? value : this.getCookie( propName );
-
-        // при выходе с элемента запоминаю значение в куку
-        $(`#form208707357 ${tag}[name='${propName}']`).blur((event)=>{ 
-            this.props[propName] = $(event.currentTarget).val();
-        });
-    }
-
-    el(elementName, tag = 'input'){
-        return $(`#form208707357 ${tag}[name='${elementName}']`);
-    }
-
-    //onChangeAddress = null;
-
-    constructor(){
-        this.bindInput('phone');
-        this.bindInput('name');
-        //this.bindInput('city');
-        this.bindInput('street');
-        //this.bindInput('house');
-        this.bindInput('flat');
-        this.bindInput('coment', 'textarea');
-        this.props.suggestedAdres = this.getCookie('suggestedAdres');
-        if(this.props.suggestedAdres)
-            this.props.street = this.props.suggestedAdres;
-    }
-
-    getCookie(name) {
-        let matches = document.cookie.match(new RegExp(
-            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-        ));
-        return matches ? decodeURIComponent(matches[1]) : '';
-    }
-}
 
 // отслеживает появление элемента с заданным классом
 class ElementWatcher {
