@@ -316,7 +316,7 @@ class ClassWatcher {
 $(document).ready(function ()
 {
     const moscowBound = [[55.142627, 36.803259],[56.021281, 37.967682]];
-    const version = 7;
+    const version = 8;
 
     var DEV_MODE = true;
     window.BRAND_CODE = '100000014';
