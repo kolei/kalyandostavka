@@ -150,10 +150,173 @@ class UserData {
     }
 }
 
+// класс, отслеживающий ЗНАЧЕНИЕ итога
+class PriceObserver {
+    //observer = null;
+    deliveryCost = 0;
+
+    setDeliveryCost(dc){
+        this.deliveryCost = dc;
+        this.updateTotal();
+    }
+
+    priceToNumber(price){
+        let match = price.match(/([\s\d]+)/);
+        if(match){
+            let val = match[1].replaceAll(' ', '');
+            if (val == '')  
+                throw 'не нашел цифры';
+            return parseInt(val, 10);
+        }
+        else
+            throw 'не нашел выражение';
+    }
+
+    updateTotal(){
+        try {
+            let calcTotal = 0;
+
+            $("div.t706__product").each((index, element)=>{
+                //let quantity = this.priceToNumber( $(element).find('div.t706__product-plusminus span.t706__product-quantity').text() );
+                let total = this.priceToNumber( $(element).find('div.t706__product-amount').text() );
+                calcTotal += total;
+            });
+
+            let total = this.priceToNumber( $('span.t706__cartwin-prodamount').text() );
+
+            if((calcTotal+this.deliveryCost) !== total){
+                //console.log( 'set new value: %s', calcTotal+this.deliveryCost );
+                $('span.t706__cartwin-prodamount').html(`${calcTotal+this.deliveryCost}&nbsp;₽`);
+                $('span.t706__cartwin-totalamount').html(`${calcTotal+this.deliveryCost}&nbsp;₽`);
+            }
+        } catch (error) {
+            //console.log(error);                
+        }
+    }
+
+    constructor(){
+        let observer = new MutationObserver((mutations) => {  
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList') {
+                    // запоминаю текущее значение
+                    this.updateTotal();
+                }
+            });
+        });
+
+        let total = $('span.t706__cartwin-prodamount')[0];
+
+        if(total){
+            observer.observe(total, {
+                attributes: false, 
+                childList: true,        //characterData не вызывается, только childList
+                characterData: false,
+                subtree: false
+            });
+        }
+    }
+}
+
+
+// отслеживает появление элемента с заданным классом
+class ElementWatcher {
+    constructor(elementToWatch, classToWatch, callback) {
+        this.elementToWatch = elementToWatch ? elementToWatch.toUpperCase() : null;
+        this.classToWatch = classToWatch;
+        this.callback = callback;
+        this.observer = null
+        this.init();
+    }
+
+    init() {
+        this.observer = new MutationObserver(this.mutationCallback)
+        this.observe()
+    }
+
+    observe() {
+        this.observer.observe(document.body, { 
+            childList: true,
+            subtree: true,
+            attributes: true,
+            characterData: true
+        });
+    }
+
+    mutationCallback = mutationsList => {
+        for(let mutation of mutationsList) {
+            if (mutation.type === 'attributes') {
+                if(mutation.target == this.elementToWatch)
+                    console.log('changed attribyte "%s" for target "%s"', mutation.attributeName, mutation.target);
+            }
+            else if (mutation.type === 'characterData') {
+                console.log('changed element.data for target "%s"', mutation.target);
+            }
+            else if (mutation.type === 'childList') {
+                if(mutation.addedNodes && this.callback)
+                    this.callback();
+                    // mutation.addedNodes.forEach(node => {
+                    //     //для вложенных элементов отдельного срабатывания нет - перебираем
+                    //     if(node.nodeName == this.elementToWatch && )
+                    //         console.log('changed childList added node "%s" for target "%s"', node.nodeName, mutation.target);
+                    //     else {
+                    //     }
+                    // });
+            }
+            else 
+                console.log('unknown type "%s"', mutation.type);
+        }
+    }
+
+}
+
+// отслеживает появление у элемента заданного класса
+class ClassWatcher {
+    constructor(targetNode, classToWatch, classAddedCallback, classRemovedCallback) {
+        this.targetNode = targetNode
+        this.classToWatch = classToWatch
+        this.classAddedCallback = classAddedCallback
+        this.classRemovedCallback = classRemovedCallback
+        this.observer = null
+        this.lastClassState = targetNode.classList.contains(this.classToWatch)
+
+        this.init()
+    }
+
+    init() {
+        this.observer = new MutationObserver(this.mutationCallback)
+        this.observe()
+    }
+
+    observe() {
+        this.observer.observe(this.targetNode, { attributes: true });
+    }
+
+    disconnect() {
+        this.observer.disconnect()
+    }
+
+    mutationCallback = mutationsList => {
+        for(let mutation of mutationsList) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                let currentClassState = mutation.target.classList.contains(this.classToWatch)
+                if(this.lastClassState !== currentClassState) {
+                    this.lastClassState = currentClassState
+                    if(currentClassState) {
+                        this.classAddedCallback()
+                    }
+                    else {
+                        //this.classRemovedCallback()
+                    }
+                }
+            }
+        }
+    }
+}
+
 $(document).ready(function ()
 {
     const moscowBound = [[55.142627, 36.803259],[56.021281, 37.967682]];
-    const version = 6;
+    const version = 7;
 
     var DEV_MODE = true;
     window.BRAND_CODE = '100000014';
@@ -738,165 +901,3 @@ $(document).ready(function ()
     }
 });
 
-// класс, отслеживающий ЗНАЧЕНИЕ итога
-class PriceObserver {
-    //observer = null;
-    deliveryCost = 0;
-
-    setDeliveryCost(dc){
-        this.deliveryCost = dc;
-        this.updateTotal();
-    }
-
-    priceToNumber(price){
-        let match = price.match(/([\s\d]+)/);
-        if(match){
-            let val = match[1].replaceAll(' ', '');
-            if (val == '')  
-                throw 'не нашел цифры';
-            return parseInt(val, 10);
-        }
-        else
-            throw 'не нашел выражение';
-    }
-
-    updateTotal(){
-        try {
-            let calcTotal = 0;
-
-            $("div.t706__product").each((index, element)=>{
-                //let quantity = this.priceToNumber( $(element).find('div.t706__product-plusminus span.t706__product-quantity').text() );
-                let total = this.priceToNumber( $(element).find('div.t706__product-amount').text() );
-                calcTotal += total;
-            });
-
-            let total = this.priceToNumber( $('span.t706__cartwin-prodamount').text() );
-
-            if((calcTotal+this.deliveryCost) !== total){
-                //console.log( 'set new value: %s', calcTotal+this.deliveryCost );
-                $('span.t706__cartwin-prodamount').html(`${calcTotal+this.deliveryCost}&nbsp;₽`);
-                $('span.t706__cartwin-totalamount').html(`${calcTotal+this.deliveryCost}&nbsp;₽`);
-            }
-        } catch (error) {
-            //console.log(error);                
-        }
-    }
-
-    constructor(){
-        let observer = new MutationObserver((mutations) => {  
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'childList') {
-                    // запоминаю текущее значение
-                    this.updateTotal();
-                }
-            });
-        });
-
-        let total = $('span.t706__cartwin-prodamount')[0];
-
-        if(total){
-            observer.observe(total, {
-                attributes: false, 
-                childList: true,        //characterData не вызывается, только childList
-                characterData: false,
-                subtree: false
-            });
-        }
-    }
-}
-
-
-// отслеживает появление элемента с заданным классом
-class ElementWatcher {
-    constructor(elementToWatch, classToWatch, callback) {
-        this.elementToWatch = elementToWatch ? elementToWatch.toUpperCase() : null;
-        this.classToWatch = classToWatch;
-        this.callback = callback;
-        this.observer = null
-        this.init();
-    }
-
-    init() {
-        this.observer = new MutationObserver(this.mutationCallback)
-        this.observe()
-    }
-
-    observe() {
-        this.observer.observe(document.body, { 
-            childList: true,
-            subtree: true,
-            attributes: true,
-            characterData: true
-        });
-    }
-
-    mutationCallback = mutationsList => {
-        for(let mutation of mutationsList) {
-            if (mutation.type === 'attributes') {
-                if(mutation.target == this.elementToWatch)
-                    console.log('changed attribyte "%s" for target "%s"', mutation.attributeName, mutation.target);
-            }
-            else if (mutation.type === 'characterData') {
-                console.log('changed element.data for target "%s"', mutation.target);
-            }
-            else if (mutation.type === 'childList') {
-                if(mutation.addedNodes && this.callback)
-                    this.callback();
-                    // mutation.addedNodes.forEach(node => {
-                    //     //для вложенных элементов отдельного срабатывания нет - перебираем
-                    //     if(node.nodeName == this.elementToWatch && )
-                    //         console.log('changed childList added node "%s" for target "%s"', node.nodeName, mutation.target);
-                    //     else {
-                    //     }
-                    // });
-            }
-            else 
-                console.log('unknown type "%s"', mutation.type);
-        }
-    }
-
-}
-
-// отслеживает появление у элемента заданного класса
-class ClassWatcher {
-    constructor(targetNode, classToWatch, classAddedCallback, classRemovedCallback) {
-        this.targetNode = targetNode
-        this.classToWatch = classToWatch
-        this.classAddedCallback = classAddedCallback
-        this.classRemovedCallback = classRemovedCallback
-        this.observer = null
-        this.lastClassState = targetNode.classList.contains(this.classToWatch)
-
-        this.init()
-    }
-
-    init() {
-        this.observer = new MutationObserver(this.mutationCallback)
-        this.observe()
-    }
-
-    observe() {
-        this.observer.observe(this.targetNode, { attributes: true });
-    }
-
-    disconnect() {
-        this.observer.disconnect()
-    }
-
-    mutationCallback = mutationsList => {
-        for(let mutation of mutationsList) {
-            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                let currentClassState = mutation.target.classList.contains(this.classToWatch)
-                if(this.lastClassState !== currentClassState) {
-                    this.lastClassState = currentClassState
-                    if(currentClassState) {
-                        this.classAddedCallback()
-                    }
-                    else {
-                        //this.classRemovedCallback()
-                    }
-                }
-            }
-        }
-    }
-}
