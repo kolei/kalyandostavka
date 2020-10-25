@@ -1,14 +1,17 @@
 $(document).ready(function (){
-    var DEV_MODE = false;
+    const moscowBound = [[55.142627, 36.803259],[56.021281, 37.967682]];
+    var DEV_MODE = true;
     window.BRAND_CODE = '100000014';
-    if(window.location.hostname == 'kalyandostavka.ru')
+    if(window.location.hostname == 'kalyandostavka.ru'){
         window.CHAIHONA_HOST = 'https://chaihona1.ru';
-    else {
-        window.CHAIHONA_HOST = 'https://tilda.dev.chaihona1.ru';
-        DEV_MODE = true;
+        DEV_MODE = false;
     }
+    else if(window.location.hostname == 'kalyan.kei.ru')
+        window.CHAIHONA_HOST = 'https://kei.chaihona1.ru';
+    else 
+        window.CHAIHONA_HOST = 'https://tilda.dev.chaihona1.ru';
 
-    console.log('v0.4, CHAIHONA_HOST = %s', window.CHAIHONA_HOST);
+    console.log('v0.5, CHAIHONA_HOST = %s', window.CHAIHONA_HOST);
 
     DEV_MODE && console.log('PATH=%s', window.location.pathname);
 
@@ -60,14 +63,6 @@ $(document).ready(function (){
 
         priceObserver = new PriceObserver();
 
-        //TODO: перенести в onYmapsReady
-
-        // улица может быть пустой
-        // if(ud.props.city && ud.props.house){
-        //     // уже есть история - ищу рест
-        //     checkAdress();
-        // }
-       
         //TODO вывести информацию о невозможности оплаты онлайн - проверить
 
         // при входе на страницу скрываю блок с кнопкой "оплатить"
@@ -109,12 +104,13 @@ $(document).ready(function (){
                 
             </div>`);
 
-        // при ручной корректировке адрес инвалидный    
-        ud.el('street').change(function(){ ud.props.jsonAddress = null; });    
+        ud.el('street').change(function(){ 
+            // при ручной корректировке инвалидирую адрес
+            ud.props.jsonAddress = null; 
+        });
 
         // подписываюсь на события ухода с поля ввода адреса
         ud.el('street').blur(function(){ checkAdress(); });
-        //ud.el('house').blur(function(){ checkAdress(); });
         
         // при смене типа оплаты меняю текст кнопки
         $('input:radio[name="paymentsystem"]').change(function() {
@@ -185,7 +181,6 @@ $(document).ready(function (){
                 return;
             
             let payment = $("#form208707357 input[name='paymentsystem']:checked").val();
-            let department = $('#chaihona_pay').attr('department');
             let total_price = $('div.t706__cartwin-prodamount-wrap span.t706__cartwin-prodamount').text();
             let delivery_time = $("#form208707357 select[name='time']").val();
             
@@ -195,7 +190,7 @@ $(document).ready(function (){
                 <input type="hidden" name="street" value="${ud.props.jsonAddress.street}"/>
                 <input type="hidden" name="house" value="${ud.props.jsonAddress.house}"/>
                 <input type="hidden" name="flat" value="${ud.props.flat}"/>
-                <input type="hidden" name="department" value="${department}"/>
+                <input type="hidden" name="department" value="${ud.props.department}"/>
                 <input type="hidden" name="total" value="${total_price}"/>
                 <input type="hidden" name="delivery_cost" value="${delivery_cost}"/>
                 <input type="hidden" name="payment" value="${payment}"/>
@@ -288,8 +283,6 @@ $(document).ready(function (){
         ymaps.ready(async function () {
             DEV_MODE && console.log('ymaps ready');
 
-            const moscowBound = [[55.142627, 36.803259],[56.021281, 37.967682]];
-
             $("input[name='street']").autocomplete({
                 // вызывается при вводе более 3-х символов, список формирую из ответов яндекса
                 source: async(request, response) => {
@@ -302,7 +295,7 @@ $(document).ready(function (){
                         if (!element.value.match(/.*подъезд.*/)) 
                         {
                             // можно и по одному await-ить, но параллельно быстрее
-                            arrayPromises.push( ymaps.geocode(element.value).then(gc=>{
+                            arrayPromises.push( ymaps.geocode(element.value, { boundedBy: moscowBound }).then(gc=>{
                                 let res = prepeareGC(gc, element.value);
 
                                 if(res)
@@ -324,7 +317,10 @@ $(document).ready(function (){
                     DEV_MODE && console.log('ui.item.jsonData = %s', JSON.stringify(ui.item.jsonData));
 
                     ud.props.street = ui.item.value;
-                    ud.props.suggestedAdres = ui.item.value;
+                    if(ud.props.suggestedAdres != ui.item.value){
+                        ud.props.suggestedAdres = ui.item.value;
+                        ud.props.department = null;
+                    }
                     if(ui.item.jsonData.house){
                         ud.props.jsonAddress = ui.item.jsonData;
                         checkAdress();
@@ -333,9 +329,10 @@ $(document).ready(function (){
                 minLength: 3
             });
 
+            // при запуске suggestedAdres может быть уже заполнен из localstorage, переводим его в jsonAddress
             if(ud.props.suggestedAdres){
                 // разбираю запомненный адрес
-                let gc = await ymaps.geocode( ud.props.suggestedAdres );
+                let gc = await ymaps.geocode( ud.props.suggestedAdres, { boundedBy: moscowBound } );
                 let res = prepeareGC(gc, ud.props.suggestedAdres);
                 if(res){
                     // есть валидный адрес
@@ -395,15 +392,30 @@ $(document).ready(function (){
     // функция проверки адреса
     async function checkAdress()
     {
+        let address = ud.el('street').val();
+        if(ud.props.suggestedAdres == address && ud.props.jsonAddress && ud.props.department){
+            DEV_MODE && console.log('адрес остался прежним, проверку не запускаю (1)');
+            return;
+        }
+
         // адрес изменили, но строка есть, возможно корректировали дом
         if(!ud.props.jsonAddress){
-            let address = ud.el('street').val();
+
             if(address && typeof ymaps.geocode != 'undefined'){
                 DEV_MODE && console.log('в адресе что-то изменилось, перепроверяю');
-                let gc = await ymaps.geocode( address );
+                let gc = await ymaps.geocode( address, { boundedBy: moscowBound } );
                 let res = prepeareGC(gc, address);
                 if(res){
-                    // запоминаю то что ввели
+                    if(ud.props.suggestedAdres == address){
+                        // адрес не изменился, запоминаю и выхожу
+                        ud.props.suggestedAdres = address;
+                        if(res.jsonData.house){
+                            ud.props.jsonAddress = res.jsonData;
+                            DEV_MODE && console.log('адрес остался прежним, проверку не запускаю (2)');
+                            return;
+                        }
+                    }
+
                     ud.props.suggestedAdres = address;
                     if(res.jsonData.house)
                         ud.props.jsonAddress = res.jsonData;
@@ -472,7 +484,7 @@ $(document).ready(function (){
                                 //$('div.js-errorbox-all').show();
                             
                             }
-                            chaihona_pay.attr('department', data.department);
+                            ud.props.department = data.department;
                         }
                         else{
                             showError(null, 'В ответе сервера нет времени работы ресторана', 'js-rule-error-string');
@@ -743,7 +755,8 @@ class UserData {
                 this._suggestedAdres = encodeURIComponent( value.trim() );
                 document.cookie = `suggestedAdres=${this._suggestedAdres}; max-age=31536000`;
             }
-        }
+        },
+        department: null
     }
     
     /*
