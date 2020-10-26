@@ -1,4 +1,4 @@
-window.script_version = 0;
+window.script_version = 1;
 
 class UserData {
     props = {
@@ -24,43 +24,15 @@ class UserData {
                 document.cookie = `phone=${this._phone}; max-age=31536000`;
             }
         },
-        _city: '',
-        oldCity: '',
-        get city(){
-            return decodeURIComponent( this._city ); 
-        },
-        set city(value){
-            if(this._city != value){
-                //this.oldCity = this._city;
-                this._city = encodeURIComponent( value.trim() );
-                $("#form208707357 input[name='city']").val(this.city);
-                document.cookie = `city=${this._city}; max-age=31536000`;
-            }
-        },
         _street: '',
-        oldStreet: '',
         get street(){ 
             return decodeURIComponent( this._street ); 
         },
         set street(value){
             if(this._street != value){
-                //this.oldStreet = this._street;
                 this._street = encodeURIComponent( value.trim() );
                 $("#form208707357 input[name='street']").val(this.street);
                 //document.cookie = `street=${this._street}; max-age=31536000`;
-            }
-        },
-        _house: '',
-        oldHouse: '',
-        get house(){ 
-            return decodeURIComponent( this._house );
-        },
-        set house(value){
-            if(this._house != value){
-                //this.oldHouse = this._house;
-                this._house = encodeURIComponent( value.trim() );
-                $("#form208707357 input[name='house']").val(this.house);
-                document.cookie = `house=${this._house}; max-age=31536000`;
             }
         },
         _flat: '',
@@ -134,9 +106,7 @@ class UserData {
     constructor(){
         this.bindInput('phone');
         this.bindInput('name');
-        //this.bindInput('city');
         this.bindInput('street');
-        //this.bindInput('house');
         this.bindInput('flat');
         this.bindInput('coment', 'textarea');
         this.props.suggestedAdres = this.getCookie('suggestedAdres');
@@ -377,9 +347,6 @@ $(document).ready(function ()
         } 
         else onYmapsReady();
 
-        // добавляю СКРЫТОЕ поле для города
-        $('#form208707357').append('<input type="hidden" name="city" value="Москва"/>');
-
         priceObserver = new PriceObserver();
 
         //TODO вывести информацию о невозможности оплаты онлайн - проверить
@@ -494,7 +461,7 @@ $(document).ready(function ()
             
             //if($('#chaihona_pay').attr('allow_pay') !== 'true')
             if(!ud.props.jsonAddress)
-                showError(null, 'Введите адрес доставки', 'js-rule-error-all');
+                showError(null, 'Введите адрес доставки с номером дома', 'js-rule-error-all');
 
             if (errorSet.size)
                 return;
@@ -690,8 +657,6 @@ $(document).ready(function ()
                 'house': geoObject.getPremiseNumber() || getCustomHouse(value),
             };
 
-            //jsonData.house.replace("undefined", "");
-
             value = value.replace(geoObject.getCountry()+", ", "");
             value = value.replace(geoObject.getAdministrativeAreas()[0]+", ", "");
             value = value.replace("undefined", "");
@@ -745,7 +710,6 @@ $(document).ready(function ()
         // если поля заполнены 
         if (ud.props.jsonAddress) {
 
-            // if (ud.props.city!=ud.props.oldCity || ud.props.street!=ud.props.oldStreet || ud.props.house!=ud.props.oldHouse) {
                 let data = {
                     city: ud.props.jsonAddress.city,
                     street: ud.props.jsonAddress.street, 
