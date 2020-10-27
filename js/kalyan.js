@@ -432,11 +432,11 @@ $(document).ready(function ()
             if(ud.props.jsonAddress && !ud.props.jsonAddress.house){
                 showError(ud.el('street'), 'Введите номер дома', 'js-rule-error-all');
                 firstErrorElement = firstErrorElement || ud.el('street');
-            } else {
-                if(!ud.props.jsonAddress){
-                    showError(null, 'Введите адрес доставки с номером дома', 'js-rule-error-all');
-                    firstErrorElement = firstErrorElement || ud.el('street');
-                }
+            }
+
+            if(!ud.props.jsonAddress){
+                showError(null, 'Введите адрес доставки с номером дома', 'js-rule-error-all');
+                firstErrorElement = firstErrorElement || ud.el('street');
             }
 
             if(!ud.props.flat){
