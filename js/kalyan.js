@@ -1,4 +1,4 @@
-window.script_version = 15;
+window.script_version = 16;
 
 class UserData {
     props = {
@@ -338,7 +338,7 @@ $(document).ready(function ()
         }
     
         if(typeof ymaps == 'undefined' || typeof ymaps.suggest == 'undefined'){
-            DEV_MODE && console.log('ymaps or ymaps.suggest undefined, load script');
+            //DEV_MODE && console.log('ymaps or ymaps.suggest undefined, load script');
             let script = document.createElement('script');
             script.async = false;
             script.onload = onYmapsReady;
@@ -358,7 +358,7 @@ $(document).ready(function ()
 
         $('.t-form__errorbox-text').css("color", "#EB334B");
         $('.t-form__errorbox-wrapper').css("background", "#FFEFC0");
-        $('t-form__errorbox-item').css("font-size", "14px");
+        $('.t-form__errorbox-item').css("font-size", "14px");
 
         // очищаю время доставки
         $("select[name='time']").empty();
@@ -592,9 +592,9 @@ $(document).ready(function ()
     }
 
     function onYmapsReady(){
-        DEV_MODE && console.log('ymaps loaded');
+        //DEV_MODE && console.log('ymaps loaded');
         ymaps.ready(async function () {
-            DEV_MODE && console.log('ymaps ready');
+            //DEV_MODE && console.log('ymaps ready');
 
             $("input[name='street']").autocomplete({
                 // вызывается при вводе более 3-х символов, список формирую из ответов яндекса
