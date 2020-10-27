@@ -1,4 +1,4 @@
-window.script_version = 20;
+window.script_version = 21;
 
 class UserData {
     props = {
@@ -462,7 +462,6 @@ $(document).ready(function ()
             if(/^\+*[\d\(\)\-\s]+$/.test(phone.val())){
                 purePhone = phone.val().replace(/[\(\)\+\s\-]/g, '');
                 if(purePhone.length==11){
-                    DEV_MODE && console.log('pure phone: %s', purePhone);
                     phone.parent().find('div.t-input-error').hide();
                     hideBottomError('js-rule-error-phone');
                 } else {
@@ -483,15 +482,13 @@ $(document).ready(function ()
             else
                 hideBottomError('js-rule-error-minorder');
             
-            //if($('#chaihona_pay').attr('allow_pay') !== 'true')
-
             if (errorSet.size) {
                 if(firstErrorElement){
                     let coords = getCoords( firstErrorElement );
-                    let payCoords = getCoords( $('#chaihona_pay') );
+                    //let payCoords = getCoords( $('#chaihona_pay') );
                     let cartWinCoords = getCoords( $('.t706__cartwin-content') );
 
-                    console.log('errY = %s, cartWinContent = %s, pay = %s', coords.top, cartWinCoords.top, payCoords.top);
+                    //console.log('errY = %s, cartWinContent = %s, pay = %s', coords.top, cartWinCoords.top, payCoords.top);
 
                     $('div.t706__cartwin').animate({scrollTop: cartWinCoords.top + coords.top });
                 }
