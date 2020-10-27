@@ -1,4 +1,4 @@
-window.script_version = 5;
+window.script_version = 6;
 
 class UserData {
     props = {
@@ -419,6 +419,16 @@ $(document).ready(function ()
         // кликнули на оплатить, проверка полей и редирект в чайхону
         window.chaihona_pay_click = function()
         {
+            //var evt = document.createEvent("MouseEvents");    
+            //evt.initMouseEvent("mousewheel", true, true, window, 10, 0, 0, 0, 0, false, false, false, false, 0, null);
+
+            //.dispatchEvent(new CustomEvent('scroll'));
+
+            $('body, html').animate({scrollTop:-150});
+
+            return;
+
+
             if($('#chaihona_pay').attr('processing')) {
                 alert('Заказ уже в обработке, ждите...');
                 return;
