@@ -1,4 +1,4 @@
-window.script_version = 14;
+window.script_version = 15;
 
 class UserData {
     props = {
@@ -358,7 +358,7 @@ $(document).ready(function ()
 
         $('.t-form__errorbox-text').css("color", "#EB334B");
         $('.t-form__errorbox-wrapper').css("background", "#FFEFC0");
-        $('.t-form__errorbox-wrapper').css("font-size", "14px");
+        $('t-form__errorbox-item').css("font-size", "14px");
 
         // очищаю время доставки
         $("select[name='time']").empty();
