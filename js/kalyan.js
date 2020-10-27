@@ -1,4 +1,4 @@
-window.script_version = 13;
+window.script_version = 14;
 
 class UserData {
     props = {
@@ -356,7 +356,7 @@ $(document).ready(function ()
         // поэтому невозможно переопределить ее поведение
         $('#form208707357 div.t-form__submit').hide();
 
-        $('.t-form__errorbox-wrapper').css("color", "#EB334B");
+        $('.t-form__errorbox-text').css("color", "#EB334B");
         $('.t-form__errorbox-wrapper').css("background", "#FFEFC0");
         $('.t-form__errorbox-wrapper').css("font-size", "14px");
 
