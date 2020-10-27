@@ -1,4 +1,4 @@
-window.script_version = 4;
+window.script_version = 5;
 
 class UserData {
     props = {
@@ -487,10 +487,10 @@ $(document).ready(function ()
                     let coords = getCoords( firstErrorElement );
                     //window.scrollTo(0, coords.top);    
 
-                    document.body.scrollTop = coords.top;
+                    //document.body.scrollTop = coords.top;
 
-                    // var evt = document.createEvent("MouseEvents");    
-                    // evt.initMouseEvent("mousewheel", true, true, window, 100, 0, 0, 0, 0, false, false, false, false, 0, null);
+                    var evt = document.createEvent("MouseEvents");    
+                    evt.initMouseEvent("mousewheel", true, true, window, -coords.top, 0, 0, 0, 0, false, false, false, false, 0, null);
                 }
                 return;
             }
