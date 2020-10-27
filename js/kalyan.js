@@ -1,4 +1,4 @@
-window.script_version = 16;
+window.script_version = 17;
 
 class UserData {
     props = {
@@ -479,7 +479,7 @@ $(document).ready(function ()
             let totalMatches = totalObj.text().match(/([\s\d]+)/);
             let total = totalMatches[1].replace(/\s/g, '');
             if(parseInt(total)<delivery_min_sum)
-                showError(null, `Минимальный заказ ${delivery_min_sum}&nbsp;₽`, 'js-rule-error-minorder');
+                showBottomError(`Минимальный заказ ${delivery_min_sum}&nbsp;₽`, 'js-rule-error-minorder');
             else
                 hideBottomError('js-rule-error-minorder');
             
@@ -489,7 +489,11 @@ $(document).ready(function ()
                 if(firstErrorElement){
                     let coords = getCoords( firstErrorElement );
                     let payCoords = getCoords( $('#chaihona_pay') );
-                    $('div.t706__cartwin').animate({scrollTop: coords.top-payCoords.top  });
+                    let cartWinCoords = getCoords( $('.t706__cartwin') );
+
+                    console.log('errY = %s, cartWin = %s, pay = %s', coords.top, cartWinCoords.top, payCoords.top);
+
+                    $('div.t706__cartwin').animate({scrollTop: -100 });
                 }
                 return;
             }
@@ -790,14 +794,14 @@ $(document).ready(function ()
                                 $("#form208707357 input[name='paymentsystem'][value='cash']").prop('checked', true);
                                 $("#form208707357 input[name='paymentsystem'][value='cloudpayments']").attr("disabled",true);
                             
-                                showError(null, 'Обслуживающий ресторан не поддерживает онлайн-оплату', 'js-rule-error-string');
+                                showBottomError('Обслуживающий ресторан не поддерживает онлайн-оплату', 'js-rule-error-string');
                                 //$('div.js-errorbox-all').show();
                             
                             }
                             ud.props.department = data.department;
                         }
                         else{
-                            showError(null, 'В ответе сервера нет времени работы ресторана', 'js-rule-error-string');
+                            showBottomError('В ответе сервера нет времени работы ресторана', 'js-rule-error-string');
                         }
                     }
                 });
@@ -818,14 +822,21 @@ $(document).ready(function ()
         
         if(bottomClass){
             errorSet.add(bottomClass);
-            $('p.t-form__errorbox-item.'+bottomClass).show();
-            $('p.t-form__errorbox-item.'+bottomClass).html(errorText);
+            // $('p.t-form__errorbox-item.'+bottomClass).show();
+            // $('p.t-form__errorbox-item.'+bottomClass).html(errorText);
         }
         
-        if(errorSet.size)
-            $('div.js-errorbox-all').show();
+        // if(errorSet.size)
+        //     $('div.js-errorbox-all').show();
     }
-    
+
+    function showBottomError(errorText, bottomClass){
+        errorSet.add(bottomClass);
+        $('p.t-form__errorbox-item.'+bottomClass).show();
+        $('p.t-form__errorbox-item.'+bottomClass).html(errorText);
+        $('div.js-errorbox-all').show();
+    }
+
     function hideBottomError(bottomClass){
         $('p.t-form__errorbox-item.'+bottomClass).hide();
         errorSet.delete(bottomClass);
