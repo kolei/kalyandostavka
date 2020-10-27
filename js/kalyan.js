@@ -1,4 +1,4 @@
-window.script_version = 1;
+window.script_version = 2;
 
 class UserData {
     props = {
@@ -427,6 +427,32 @@ $(document).ready(function ()
             hideAllErrors();
             hideBottomError('js-rule-error-all');
             
+            let firstErrorElement = null;
+
+            if(ud.props.jsonAddress && !ud.props.jsonAddress.house){
+                showError(ud.el('street'), 'Введите номер дома', 'js-rule-error-all');
+                firstErrorElement = firstErrorElement || ud.el('street');
+            } else {
+                if(!ud.props.jsonAddress){
+                    showError(null, 'Введите адрес доставки с номером дома', 'js-rule-error-all');
+                    firstErrorElement = firstErrorElement || ud.el('street');
+                }
+            }
+
+            if(!ud.props.flat){
+                showError(ud.el('flat'), 'Введите номер квартиры', 'js-rule-error-all');
+                firstErrorElement = firstErrorElement || ud.el('flat');
+            }
+
+            let name = ud.el('name');
+            if(/^[\S\s]+$/.test(name.val())){
+                name.parent().find('div.t-input-error').hide();
+                hideBottomError('js-rule-error-name');
+            } else {
+                showError(name, 'Введите Ваше имя', 'js-rule-error-name');
+                firstErrorElement = firstErrorElement || name;
+            }
+
             let phone = ud.el('phone');
             let purePhone = '';
             if(/^\+*[\d\(\)\-\s]+$/.test(phone.val())){
@@ -435,23 +461,14 @@ $(document).ready(function ()
                     DEV_MODE && console.log('pure phone: %s', purePhone);
                     phone.parent().find('div.t-input-error').hide();
                     hideBottomError('js-rule-error-phone');
-                } else
+                } else {
                     showError(phone, 'Неверная длина номера телефона, должно быть 11 цифр с кодом страны', 'js-rule-error-phone');
-            } else 
+                    firstErrorElement = firstErrorElement || phone;
+                }
+            } else {
                 showError(phone, 'Неверный формат номера телефона', 'js-rule-error-phone');
-
-            let name = ud.el('name');
-            if(/^[\S\s]+$/.test(name.val())){
-                name.parent().find('div.t-input-error').hide();
-                hideBottomError('js-rule-error-name');
-            } else 
-                showError(name, 'Введите Ваше имя', 'js-rule-error-name');
-
-            if(ud.props.jsonAddress && !ud.props.jsonAddress.house)
-                showError(ud.el('street'), 'Введите номер дома', 'js-rule-error-all');
-
-            if(!ud.props.flat)
-                showError(ud.el('flat'), 'Введите номер квартиры', 'js-rule-error-all');
+                firstErrorElement = firstErrorElement || phone;
+            }
 
             // из суммы вырезаем пробелы и сравниваем с delivery_min_sum
             let totalObj = $('span.t706__cartwin-prodamount');
@@ -463,11 +480,15 @@ $(document).ready(function ()
                 hideBottomError('js-rule-error-minorder');
             
             //if($('#chaihona_pay').attr('allow_pay') !== 'true')
-            if(!ud.props.jsonAddress)
-                showError(null, 'Введите адрес доставки с номером дома', 'js-rule-error-all');
 
-            if (errorSet.size)
+            if (errorSet.size) {
+                //console.log('coords: %s', JSON.stringify(getCoords(ud.el('street'))));
+                if(firstErrorElement){
+                    let coords = getCoords( firstErrorElement );
+                    window.scrollTo(0, coords.top);    
+                }
                 return;
+            }
             
             let payment = $("#form208707357 input[name='paymentsystem']:checked").val();
             let total_price = $('div.t706__cartwin-prodamount-wrap span.t706__cartwin-prodamount').text();
@@ -517,7 +538,6 @@ $(document).ready(function ()
 
             $(`<form action="${window.CHAIHONA_HOST}/eda-na-raione" method="POST">${params}</form>`).appendTo($(document.body)).submit();
         }
-
     }
 
     function processPaymentError(){
@@ -792,14 +812,14 @@ $(document).ready(function ()
             }
         }
         
-        if(bottomClass){
-            errorSet.add(bottomClass);
-            $('p.t-form__errorbox-item.'+bottomClass).show();
-            $('p.t-form__errorbox-item.'+bottomClass).html(errorText);
-        }
+        // if(bottomClass){
+        //     errorSet.add(bottomClass);
+        //     $('p.t-form__errorbox-item.'+bottomClass).show();
+        //     $('p.t-form__errorbox-item.'+bottomClass).html(errorText);
+        // }
         
-        if(errorSet.size)
-            $('div.js-errorbox-all').show();
+        // if(errorSet.size)
+        //     $('div.js-errorbox-all').show();
     }
     
     function hideBottomError(bottomClass){
@@ -866,6 +886,24 @@ $(document).ready(function ()
                 }
             }
         }
+    }
+
+    function getCoords(elem) { // crossbrowser version
+        var box = elem[0].getBoundingClientRect();
+    
+        var body = document.body;
+        var docEl = document.documentElement;
+    
+        var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
+        var scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
+    
+        var clientTop = docEl.clientTop || body.clientTop || 0;
+        var clientLeft = docEl.clientLeft || body.clientLeft || 0;
+    
+        var top  = box.top +  scrollTop - clientTop;
+        var left = box.left + scrollLeft - clientLeft;
+    
+        return { top: Math.round(top), left: Math.round(left) };
     }
 });
 
