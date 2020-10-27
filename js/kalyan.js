@@ -1,4 +1,4 @@
-window.script_version = 18;
+window.script_version = 19;
 
 class UserData {
     props = {
@@ -493,7 +493,7 @@ $(document).ready(function ()
 
                     console.log('errY = %s, cartWinContent = %s, pay = %s', coords.top, cartWinCoords.top, payCoords.top);
 
-                    $('div.t706__cartwin').animate({scrollTop: -100 });
+                    $('div.t706__cartwin').animate({scrollTop: cartWinCoords.top + coords.top });
                 }
                 return;
             }
@@ -751,8 +751,8 @@ $(document).ready(function ()
                 // перед новым запросом гашу старую ошибку
                 ud.el('street').parent().find('div.t-input-error').hide();
                 
-                hideBottomError('js-rule-error-minlength');
-                hideBottomError('js-rule-error-string');
+                // hideBottomError('js-rule-error-minlength');
+                // hideBottomError('js-rule-error-string');
 
                 // запрашиваем возможность доставки у АПИ
                 $.ajax({
@@ -831,6 +831,7 @@ $(document).ready(function ()
     }
 
     function showBottomError(errorText, bottomClass){
+        console.log('showBottomError: %s', errorText);
         errorSet.add(bottomClass);
         $('p.t-form__errorbox-item.'+bottomClass).show();
         $('p.t-form__errorbox-item.'+bottomClass).html(errorText);
@@ -842,6 +843,7 @@ $(document).ready(function ()
         errorSet.delete(bottomClass);
         
         //if(errorSet.size==0)
+        console.log('hideBottomError: %s', bottomClass);
             $('div.js-errorbox-all').hide();
     }
     
