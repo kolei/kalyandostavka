@@ -485,7 +485,12 @@ $(document).ready(function ()
                 //console.log('coords: %s', JSON.stringify(getCoords(ud.el('street'))));
                 if(firstErrorElement){
                     let coords = getCoords( firstErrorElement );
-                    window.scrollTo(0, coords.top);    
+                    //window.scrollTo(0, coords.top);    
+
+                    document.body.scrollTop = coords.top;
+
+                    // var evt = document.createEvent("MouseEvents");    
+                    // evt.initMouseEvent("mousewheel", true, true, window, 100, 0, 0, 0, 0, false, false, false, false, 0, null);
                 }
                 return;
             }
