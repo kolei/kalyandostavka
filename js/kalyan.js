@@ -356,6 +356,10 @@ $(document).ready(function ()
         // поэтому невозможно переопределить ее поведение
         $('#form208707357 div.t-form__submit').hide();
 
+        $('.t-form__errorbox-wrapper').css("color", "#EB334B");
+        $('.t-form__errorbox-wrapper').css("background", "#FFEFC0");
+        $('.t-form__errorbox-wrapper').css("font-size", "14px");
+
         // очищаю время доставки
         $("select[name='time']").empty();
 
