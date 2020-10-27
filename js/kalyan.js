@@ -1,4 +1,4 @@
-window.script_version = 2;
+window.script_version = 3;
 
 class UserData {
     props = {
@@ -812,11 +812,11 @@ $(document).ready(function ()
             }
         }
         
-        // if(bottomClass){
-        //     errorSet.add(bottomClass);
-        //     $('p.t-form__errorbox-item.'+bottomClass).show();
-        //     $('p.t-form__errorbox-item.'+bottomClass).html(errorText);
-        // }
+        if(bottomClass){
+            errorSet.add(bottomClass);
+            // $('p.t-form__errorbox-item.'+bottomClass).show();
+            // $('p.t-form__errorbox-item.'+bottomClass).html(errorText);
+        }
         
         // if(errorSet.size)
         //     $('div.js-errorbox-all').show();
