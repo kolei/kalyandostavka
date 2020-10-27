@@ -370,9 +370,9 @@ $(document).ready(function ()
         let styleTag = $('<style>ul.ui-autocomplete { z-index: 999999; } div.ui-menu-item-wrapper {line-height: 2em;}</style>');
         $('html > head').append(styleTag);
 
-        //01.10.2020 дефолтное время доставки
+        //01.10.2020 дефолтное время доставки (кальян в одном ресторане)
         //TODO при повторных вызовах проверять текущее значение
-        setDeliveryTime('11:00-23:30', 60);
+        setDeliveryTime('11:00-05:00', 100);
 
         // рисуем аналогичную кнопку для перехода на оплату в чайхону   
         $('#form208707357 div.t-form__inputsbox').append(`
@@ -446,6 +446,9 @@ $(document).ready(function ()
                 hideBottomError('js-rule-error-name');
             } else 
                 showError(name, 'Введите Ваше имя', 'js-rule-error-name');
+
+            if(ud.props.jsonAddress && !ud.props.jsonAddress.house)
+                showError(ud.el('street'), 'Введите номер дома', 'js-rule-error-all');
 
             if(!ud.props.flat)
                 showError(ud.el('flat'), 'Введите номер квартиры', 'js-rule-error-all');
