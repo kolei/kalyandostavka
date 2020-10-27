@@ -1,4 +1,4 @@
-window.script_version = 6;
+window.script_version = 7;
 
 class UserData {
     props = {
@@ -424,7 +424,7 @@ $(document).ready(function ()
 
             //.dispatchEvent(new CustomEvent('scroll'));
 
-            $('body, html').animate({scrollTop:-150});
+            $('div.t706__cartwin').animate({scrollTop:-150});
 
             return;
 
