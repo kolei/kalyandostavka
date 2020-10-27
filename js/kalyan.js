@@ -1,4 +1,4 @@
-window.script_version = 17;
+window.script_version = 18;
 
 class UserData {
     props = {
@@ -489,9 +489,9 @@ $(document).ready(function ()
                 if(firstErrorElement){
                     let coords = getCoords( firstErrorElement );
                     let payCoords = getCoords( $('#chaihona_pay') );
-                    let cartWinCoords = getCoords( $('.t706__cartwin') );
+                    let cartWinCoords = getCoords( $('.t706__cartwin-content') );
 
-                    console.log('errY = %s, cartWin = %s, pay = %s', coords.top, cartWinCoords.top, payCoords.top);
+                    console.log('errY = %s, cartWinContent = %s, pay = %s', coords.top, cartWinCoords.top, payCoords.top);
 
                     $('div.t706__cartwin').animate({scrollTop: -100 });
                 }
@@ -841,7 +841,7 @@ $(document).ready(function ()
         $('p.t-form__errorbox-item.'+bottomClass).hide();
         errorSet.delete(bottomClass);
         
-        if(errorSet.size==0)
+        //if(errorSet.size==0)
             $('div.js-errorbox-all').hide();
     }
     
