@@ -1,4 +1,4 @@
-window.script_version = 8;
+window.script_version = 10;
 
 class UserData {
     props = {
@@ -419,16 +419,6 @@ $(document).ready(function ()
         // кликнули на оплатить, проверка полей и редирект в чайхону
         window.chaihona_pay_click = function()
         {
-            //var evt = document.createEvent("MouseEvents");    
-            //evt.initMouseEvent("mousewheel", true, true, window, 10, 0, 0, 0, 0, false, false, false, false, 0, null);
-
-            //.dispatchEvent(new CustomEvent('scroll'));
-
-            $('.t706__cartwin').scrollTop(-150);
-
-            return;
-
-
             if($('#chaihona_pay').attr('processing')) {
                 alert('Заказ уже в обработке, ждите...');
                 return;
@@ -492,15 +482,10 @@ $(document).ready(function ()
             //if($('#chaihona_pay').attr('allow_pay') !== 'true')
 
             if (errorSet.size) {
-                //console.log('coords: %s', JSON.stringify(getCoords(ud.el('street'))));
                 if(firstErrorElement){
                     let coords = getCoords( firstErrorElement );
-                    //window.scrollTo(0, coords.top);    
-
-                    //document.body.scrollTop = coords.top;
-
-                    var evt = document.createEvent("MouseEvents");    
-                    evt.initMouseEvent("mousewheel", true, true, window, -coords.top, 0, 0, 0, 0, false, false, false, false, 0, null);
+                    let payCoords = getCoords( $('#chaihona_pay') );
+                    $('div.t706__cartwin').animate({scrollTop: coords.top-payCoords.top  });
                 }
                 return;
             }
