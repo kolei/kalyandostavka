@@ -1,4 +1,4 @@
-window.script_version = 19;
+window.script_version = 20;
 
 class UserData {
     props = {
@@ -439,7 +439,7 @@ $(document).ready(function ()
             }
 
             if(!ud.props.jsonAddress){
-                showError(null, 'Введите адрес доставки с номером дома', 'js-rule-error-all');
+                showError(ud.el('street'), 'Введите адрес доставки с номером дома', 'js-rule-error-all');
                 firstErrorElement = firstErrorElement || ud.el('street');
             }
 
@@ -831,7 +831,7 @@ $(document).ready(function ()
     }
 
     function showBottomError(errorText, bottomClass){
-        console.log('showBottomError: %s', errorText);
+        //console.log('showBottomError: %s', errorText);
         errorSet.add(bottomClass);
         $('p.t-form__errorbox-item.'+bottomClass).show();
         $('p.t-form__errorbox-item.'+bottomClass).html(errorText);
@@ -843,7 +843,7 @@ $(document).ready(function ()
         errorSet.delete(bottomClass);
         
         //if(errorSet.size==0)
-        console.log('hideBottomError: %s', bottomClass);
+        //console.log('hideBottomError: %s', bottomClass);
             $('div.js-errorbox-all').hide();
     }
     
