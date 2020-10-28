@@ -1,4 +1,4 @@
-window.script_version = 22;
+window.script_version = 23;
 
 class UserData {
     props = {
@@ -484,13 +484,13 @@ $(document).ready(function ()
             
             if (errorSet.size) {
                 if(firstErrorElement){
-                    let coords = getCoords( firstErrorElement );
+                    //let coords = getCoords( firstErrorElement );
                     //let payCoords = getCoords( $('#chaihona_pay') );
-                    let cartWinCoords = getCoords( $('.t706__cartwin-content') );
+                    //let cartWinCoords = getCoords( $('.t706__cartwin-content') );
 
                     //console.log('errY = %s, cartWinContent = %s, pay = %s', coords.top, cartWinCoords.top, payCoords.top);
 
-                    $('div.t706__cartwin').animate({scrollTop: cartWinCoords.top + coords.top });
+                    $('div.t706__cartwin').animate({scrollTop: -100 });
                 }
                 return;
             }
