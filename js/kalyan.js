@@ -1,4 +1,4 @@
-window.script_version = 24;
+window.script_version = 25;
 
 class UserData {
     props = {
@@ -400,7 +400,7 @@ $(document).ready(function ()
         });
 
         // при редактировании квартиры убираю ошибку
-        ud.el('flat').change(function(){ 
+        ud.el('flat').keypress(function(){ 
             if($(this).val().trim().length>0){
                 console.log('try hide flat error');
                 hideError( ud.el('flat') );
