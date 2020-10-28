@@ -1,4 +1,4 @@
-window.script_version = 26;
+window.script_version = 27;
 
 class UserData {
     props = {
@@ -401,10 +401,11 @@ $(document).ready(function ()
 
         // при редактировании квартиры убираю ошибку
         ud.el('flat').keypress(function(){ 
-            console.log('keypress event');
-            if($(this).val().trim().length>0){
+            if(ud.el('flat').val().trim().length == 0)
+                showError(ud.el('flat'), 'Введите номер квартиры', 'js-rule-error-all');
+            else
                 hideError( ud.el('flat') );
-            }
+            
         });
 
         // подписываюсь на события ухода с поля ввода адреса
