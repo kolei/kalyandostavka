@@ -1,4 +1,4 @@
-window.script_version = 28;
+window.script_version = 29;
 
 class UserData {
     props = {
@@ -493,12 +493,6 @@ $(document).ready(function ()
             
             if (errorSet.size) {
                 if(firstErrorElement){
-                    //let coords = getCoords( firstErrorElement );
-                    //let payCoords = getCoords( $('#chaihona_pay') );
-                    //let cartWinCoords = getCoords( $('.t706__cartwin-content') );
-
-                    //console.log('errY = %s, cartWinContent = %s, pay = %s', coords.top, cartWinCoords.top, payCoords.top);
-
                     $('div.t706__cartwin').animate({scrollTop: -100 });
                 }
                 return;
@@ -543,7 +537,7 @@ $(document).ready(function ()
             });
 
             if(!hasKalyan){
-                showError(null, 'В заказе должен быть кальян', 'js-rule-error-all');
+                showBottomError('В заказе должен быть кальян', 'js-rule-error-all');
                 return;
             }
 
@@ -757,9 +751,6 @@ $(document).ready(function ()
                 // перед новым запросом гашу старую ошибку
                 ud.el('street').parent().find('div.t-input-error').hide();
                 
-                // hideBottomError('js-rule-error-minlength');
-                // hideBottomError('js-rule-error-string');
-
                 // запрашиваем возможность доставки у АПИ
                 $.ajax({
                     url: `${window.CHAIHONA_HOST}/eda-na-raione`,
@@ -777,6 +768,10 @@ $(document).ready(function ()
                         showError(ud.el('street'), 'К сожалению, мы не доставляем по указанному адресу', 'js-rule-error-minlength');
                     }
                     else if(data.message){
+                        hideBottomError('js-rule-error-string');
+
+
+
                         //TODO где-то вписать сумму доставки
                         // формирую выпадающий список "доставить к"
                         if(data.work_time){ 
