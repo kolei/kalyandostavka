@@ -1,4 +1,4 @@
-window.script_version = 27;
+window.script_version = 28;
 
 class UserData {
     props = {
@@ -400,7 +400,7 @@ $(document).ready(function ()
         });
 
         // при редактировании квартиры убираю ошибку
-        ud.el('flat').keypress(function(){ 
+        ud.el('flat').on('input',function(e){
             if(ud.el('flat').val().trim().length == 0)
                 showError(ud.el('flat'), 'Введите номер квартиры', 'js-rule-error-all');
             else
