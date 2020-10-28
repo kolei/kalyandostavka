@@ -399,6 +399,12 @@ $(document).ready(function ()
             ud.props.jsonAddress = null; 
         });
 
+        // при редактировании квартиры убираю ошибку
+        ud.el('flat').change(function(){ 
+            if($(this).val().trim().length>0)
+                hideError( ud.el('flat') );
+        });
+
         // подписываюсь на события ухода с поля ввода адреса
         ud.el('street').blur(function(){ checkAdress(); });
         
@@ -803,6 +809,14 @@ $(document).ready(function ()
                     }
                 });
             // }
+        }
+    }
+
+    function hideError(element){
+        if(element){
+            let errorElement = element.parent().find('div.t-input-error');
+            if(errorElement)
+                errorElement.hide();
         }
     }
 
