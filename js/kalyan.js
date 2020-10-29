@@ -1,4 +1,4 @@
-window.script_version = 33;
+window.script_version = 34;
 
 class UserData {
     props = {
@@ -312,7 +312,7 @@ $(document).ready(function ()
 {
     const moscowBound = [[55.142627, 36.803259],[56.021281, 37.967682]];
 
-    var attributeWatchers = [];
+    var elementWatchers = [];
 
     var DEV_MODE = true;
     window.BRAND_CODE = '100000014';
@@ -447,20 +447,21 @@ $(document).ready(function ()
             document.getElementsByClassName('t706__cartwin')[0], 
             't706__cartwin_showed', 
             function(){
-                // блюд может быть несколько
-                $('div.t706__product').each(function(){
-                    // SKU ПОКА последний div в куче
-                    let SKU = $('div.t706__product-title div:last', this);
-                    
-                    if(SKU){
-                        console.log('найден SKU, создаю AttributeWatcher %s', JSON.stringify(SKU[0]));
-                        SKU.hide();
-                        attributeWatchers.push( new AttributeWatcher(SKU[0], 'css', function(){
+                // очищаю старые наблюдатели
+                elementWatchers = [];
 
-                        }));
-                    }
-                });
-        }, null);
+                hideSKU();
+
+                // кажется при удалении блюда пересоздается t706__cartwin-products
+                let cartWinProducts = $('div.t706__cartwin-products');
+                if(cartWinProducts)
+                    elementWatchers.push(
+                        new ElementWatcher(cartWinProducts[0], null, function(){
+                            console.log('что-то измеинлось в t706__cartwin-products, скрываю SKU');
+                            hideSKU();
+                        })
+                    );
+            }, null);
 
         // кликнули на оплатить, проверка полей и редирект в чайхону
         window.chaihona_pay_click = function()
@@ -579,6 +580,14 @@ $(document).ready(function ()
 
             $(`<form action="${window.CHAIHONA_HOST}/eda-na-raione" method="POST">${params}</form>`).appendTo($(document.body)).submit();
         }
+    }
+
+    function hideSKU(){
+        // блюд может быть несколько
+        $('div.t706__product').each(function(){
+            // SKU ПОКА последний div в куче
+            $('div.t706__product-title div:last', this).hide();
+        });
     }
 
     function processPaymentError(){
