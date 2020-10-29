@@ -1,4 +1,4 @@
-window.script_version = 34;
+window.script_version = 35;
 
 class UserData {
     props = {
@@ -193,7 +193,7 @@ class PriceObserver {
 // отслеживает появление элемента с заданным классом
 class ElementWatcher {
     constructor(elementToWatch, classToWatch, callback) {
-        this.elementToWatch = elementToWatch ? elementToWatch.toUpperCase() : null;
+        this.elementToWatch = elementToWatch ? elementToWatch : document.body;
         this.classToWatch = classToWatch;
         this.callback = callback;
         this.observer = null
@@ -206,7 +206,7 @@ class ElementWatcher {
     }
 
     observe() {
-        this.observer.observe(document.body, { 
+        this.observer.observe(this.elementToWatch, { 
             childList: true,
             subtree: true,
             attributes: true,
@@ -216,26 +216,20 @@ class ElementWatcher {
 
     mutationCallback = mutationsList => {
         for(let mutation of mutationsList) {
-            if (mutation.type === 'attributes') {
-                if(mutation.target == this.elementToWatch)
-                    console.log('changed attribyte "%s" for target "%s"', mutation.attributeName, mutation.target);
-            }
-            else if (mutation.type === 'characterData') {
-                console.log('changed element.data for target "%s"', mutation.target);
-            }
-            else if (mutation.type === 'childList') {
+            // if (mutation.type === 'attributes') {
+            //     if(mutation.target == this.elementToWatch)
+            //         console.log('changed attribyte "%s" for target "%s"', mutation.attributeName, mutation.target);
+            // }
+            // else if (mutation.type === 'characterData') {
+            //     console.log('changed element.data for target "%s"', mutation.target);
+            // }
+            // else 
+            if (mutation.type === 'childList') {
                 if(mutation.addedNodes && this.callback)
                     this.callback();
-                    // mutation.addedNodes.forEach(node => {
-                    //     //для вложенных элементов отдельного срабатывания нет - перебираем
-                    //     if(node.nodeName == this.elementToWatch && )
-                    //         console.log('changed childList added node "%s" for target "%s"', node.nodeName, mutation.target);
-                    //     else {
-                    //     }
-                    // });
             }
-            else 
-                console.log('unknown type "%s"', mutation.type);
+            // else 
+            //     console.log('unknown type "%s"', mutation.type);
         }
     }
 
