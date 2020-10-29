@@ -1,4 +1,4 @@
-window.script_version = 29;
+window.script_version = 30;
 
 class UserData {
     props = {
@@ -241,6 +241,38 @@ class ElementWatcher {
 
 }
 
+class AttributeWatcher {
+    constructor(targetNode, attributeToWatch, attributeChangedCallback) {
+        this.targetNode = targetNode
+        this.attributeToWatch = attributeToWatch
+        this.attributeChangedCallback = attributeChangedCallback
+        this.observer = null
+
+        this.init()
+    }
+
+    init() {
+        this.observer = new MutationObserver(this.attributeChangedCallback)
+        this.observe()
+    }
+
+    observe() {
+        this.observer.observe(this.targetNode, { attributes: true });
+    }
+
+    disconnect() {
+        this.observer.disconnect()
+    }
+
+    mutationCallback = mutationsList => {
+        for(let mutation of mutationsList) {
+            if (mutation.type === 'attributes') {
+                console.log('attr changed: %s', mutation.attributeName);
+            }
+        }
+    }
+}
+
 // отслеживает появление у элемента заданного класса
 class ClassWatcher {
     constructor(targetNode, classToWatch, classAddedCallback, classRemovedCallback) {
@@ -318,7 +350,7 @@ $(document).ready(function ()
     function processRoot(){
         ud = new UserData();
 
-        let cssId = 'jQueryUI_CSS';  // you could encode the css path itself to generate id..
+        let cssId = 'jQueryUI_CSS';
         if (!document.getElementById(cssId))
         {
             let link  = document.createElement('link');
@@ -356,6 +388,7 @@ $(document).ready(function ()
         // поэтому невозможно переопределить ее поведение
         $('#form208707357 div.t-form__submit').hide();
 
+        // перекрашиваю нижний блок ошибок
         $('.t-form__errorbox-text').css("color", "#EB334B");
         $('.t-form__errorbox-wrapper').css("background", "#FFEFC0");
         $('.t-form__errorbox-item').css("font-size", "14px");
@@ -399,13 +432,12 @@ $(document).ready(function ()
             ud.props.jsonAddress = null; 
         });
 
-        // при редактировании квартиры убираю ошибку
+        // при редактировании квартиры убираю и показываю ошибку
         ud.el('flat').on('input',function(e){
             if(ud.el('flat').val().trim().length == 0)
                 showError(ud.el('flat'), 'Введите номер квартиры', 'js-rule-error-all');
             else
                 hideError( ud.el('flat') );
-            
         });
 
         // подписываюсь на события ухода с поля ввода адреса
@@ -425,7 +457,14 @@ $(document).ready(function ()
                 // блюд может быть несколько
                 $('div.t706__product').each(function(){
                     // SKU ПОКА последний div в куче
-                    $('div.t706__product-title div:last', this).hide();
+                    let SKU = $('div.t706__product-title div:last', this);
+                    
+                    if(SKU){
+                        SKU.hide();
+                        new AttributeWatcher(SKU[0], 'css', function(){
+                            
+                        });
+                    }
                 });
         }, null);
 
