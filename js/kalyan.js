@@ -1,4 +1,4 @@
-window.script_version = 31;
+window.script_version = 32;
 
 class UserData {
     props = {
@@ -251,7 +251,8 @@ class AttributeWatcher {
     }
 
     disconnect() {
-        this.observer.disconnect()
+        this.observer.disconnect();
+        console.log('AttributeWatcher disconnected');
     }
 
     mutationCallback = mutationsList => {
@@ -450,6 +451,7 @@ $(document).ready(function ()
                     let SKU = $('div.t706__product-title div:last', this);
                     
                     if(SKU){
+                        console.log('найден SKU, создаю AttributeWatcher %s', JSON.stringify(SKU[0]));
                         SKU.hide();
                         new AttributeWatcher(SKU[0], 'css', function(){
 
