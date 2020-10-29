@@ -1,4 +1,4 @@
-window.script_version = 30;
+window.script_version = 31;
 
 class UserData {
     props = {
@@ -246,17 +246,7 @@ class AttributeWatcher {
         this.targetNode = targetNode
         this.attributeToWatch = attributeToWatch
         this.attributeChangedCallback = attributeChangedCallback
-        this.observer = null
-
-        this.init()
-    }
-
-    init() {
-        this.observer = new MutationObserver(this.attributeChangedCallback)
-        this.observe()
-    }
-
-    observe() {
+        this.observer = new MutationObserver(this.mutationCallback);
         this.observer.observe(this.targetNode, { attributes: true });
     }
 
@@ -462,7 +452,7 @@ $(document).ready(function ()
                     if(SKU){
                         SKU.hide();
                         new AttributeWatcher(SKU[0], 'css', function(){
-                            
+
                         });
                     }
                 });
