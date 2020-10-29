@@ -1,4 +1,4 @@
-window.script_version = 32;
+window.script_version = 33;
 
 class UserData {
     props = {
@@ -312,6 +312,8 @@ $(document).ready(function ()
 {
     const moscowBound = [[55.142627, 36.803259],[56.021281, 37.967682]];
 
+    var attributeWatchers = [];
+
     var DEV_MODE = true;
     window.BRAND_CODE = '100000014';
     if(window.location.hostname == 'kalyandostavka-prod.ru'){
@@ -453,9 +455,9 @@ $(document).ready(function ()
                     if(SKU){
                         console.log('найден SKU, создаю AttributeWatcher %s', JSON.stringify(SKU[0]));
                         SKU.hide();
-                        new AttributeWatcher(SKU[0], 'css', function(){
+                        attributeWatchers.push( new AttributeWatcher(SKU[0], 'css', function(){
 
-                        });
+                        }));
                     }
                 });
         }, null);
