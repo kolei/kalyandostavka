@@ -1,4 +1,4 @@
-window.script_version = 35;
+window.script_version = 36;
 
 class UserData {
     props = {
@@ -330,11 +330,28 @@ $(document).ready(function ()
     var delivery_cost = 0;
     var errorSet = new Set();
 
+    // бесконечная прокрутка даты
+    var lastScrollTop = 0;
+    var selectObj = null;
+    var singleoptionheight = null;
+    var selectboxheight = null;
+    var numOfOptionBeforeToLoadNextSet = 2;
+    var lastScrollTop = 0;
+    var nextScrollDate = new Date();
+    var dateSelected = ' selected';
+    var isAppending = false;
+    var currentScroll = 0;
+
     if(window.location.pathname == '/' || window.location.pathname == '/shop') processRoot();
     else if(window.location.pathname == '/success' || window.location.pathname == '/success/') processSuccess();
     else if(window.location.pathname == '/paymenterror' || window.location.pathname == '/paymenterror/') processPaymentError();
 
     function processRoot(){
+
+        selectObj = $("select[name='date']");
+        singleoptionheight = selectObj.find("option").height();
+        selectboxheight = selectObj.height();
+
         ud = new UserData();
 
         let cssId = 'jQueryUI_CSS';
@@ -382,6 +399,44 @@ $(document).ready(function ()
 
         // очищаю время доставки
         $("select[name='time']").empty();
+
+        // если выбрали следующий день, то "Сегодня" меняю на "Завтра"
+        $("select[name='time']").change(function(){
+            let selTime = $("select[name='time']").val();
+            let curTime = (new Date()).getHours();
+
+            if(parseInt(selTime.substring(0, 2)) < curTime){
+                if(selectObj.find(":selected").index()==0){
+                    selectObj.find(':nth-child(2)').prop('selected', true); 
+                }
+            }
+        });
+
+        if(selectObj){
+            selectObj.empty();
+
+            // лайфхак для скрытия списка после выбора
+            selectObj.mousedown( function(){ if(this.options.length>8) this.size=8; });
+            selectObj.blur( function(){ this.size=0; });
+            selectObj.change( function(){ 
+                this.size=0; 
+
+                if(selectObj.find(":selected").index()==0){
+                    let selTime = $("select[name='time']").val();
+                    let curTime = (new Date()).getHours();
+        
+                    if(parseInt(selTime.substring(0, 2)) < curTime){
+                        $("select[name='time'] :nth-child(1)").prop('selected', true); 
+                    }        
+                }
+            });
+                
+            LoadNextSetOfOptions(0);            
+
+            selectObj.scroll(function(event) {
+                OnDateScroll(event);
+            });
+        }
 
         //01.10.2020 в поле телефон плейсхолдер +7(999)999-99-99, при фокусе автоматически вставлять +7
         ud.el('phone').attr('placeholder', '+7(999)999-99-99');
@@ -446,12 +501,14 @@ $(document).ready(function ()
 
                 hideSKU();
 
-                // кажется при удалении блюда пересоздается t706__cartwin-products
+                // при удалении/изменении блюда пересоздается t706__cartwin-products
+                // наблюдатели за конкретными элементами не работают - смотрю на весь список
                 let cartWinProducts = $('div.t706__cartwin-products');
                 if(cartWinProducts)
                     elementWatchers.push(
                         new ElementWatcher(cartWinProducts[0], null, function(){
-                            console.log('что-то измеинлось в t706__cartwin-products, скрываю SKU');
+                            //TODO в перспективе оптимизировать - вызывается много раз
+                            //console.log('что-то изменилось в t706__cartwin-products, скрываю SKU');
                             hideSKU();
                         })
                     );
@@ -528,6 +585,7 @@ $(document).ready(function ()
             
             let payment = $("#form208707357 input[name='paymentsystem']:checked").val();
             let total_price = $('div.t706__cartwin-prodamount-wrap span.t706__cartwin-prodamount').text();
+            let delivery_date = $("#form208707357 select[name='date']").val();
             let delivery_time = $("#form208707357 select[name='time']").val();
             
             let params=`<input type="hidden" name="phone" value="${purePhone}"/>
@@ -541,7 +599,7 @@ $(document).ready(function ()
                 <input type="hidden" name="delivery_cost" value="${delivery_cost}"/>
                 <input type="hidden" name="payment" value="${payment}"/>
                 <input type="hidden" name="coment" value="${ud.props.coment}"/>
-                <input type="hidden" name="delivery_time" value="${delivery_time}"/>
+                <input type="hidden" name="delivery_time" value="${delivery_date} ${delivery_time}"/>
                 <input type="hidden" name="brand" value="${window.BRAND_CODE}"/>`;
 
             let hasKalyan = false;
@@ -911,13 +969,13 @@ $(document).ready(function ()
             let m = new Intl.DateTimeFormat('ru', { month: '2-digit' }).format(date);
             let d = new Intl.DateTimeFormat('ru', { day: '2-digit' }).format(date);
 
-            let date_str = `${d}.${m}.${y}`;
+            // let date_str = `${d}.${m}.${y}`;
 
             y = new Intl.DateTimeFormat('ru', { year: 'numeric' }).format(tomorrow);
             m = new Intl.DateTimeFormat('ru', { month: '2-digit' }).format(tomorrow);
             d = new Intl.DateTimeFormat('ru', { day: '2-digit' }).format(tomorrow);
 
-            let tomorrow_str = `${d}.${m}.${y}`;
+            // let tomorrow_str = `${d}.${m}.${y}`;
 
             let match = work_time.match(/(\d+):(\d+)-(\d+):(\d+)/);
             
@@ -939,33 +997,71 @@ $(document).ready(function ()
                         if(i<24*60)
                             select.append(new Option(
                                 `${pad( Math.floor(i/60) )}:${pad( i%60 )}`, 
-                                `${date_str} ${pad( Math.floor(i/60) )}:${pad( i%60 )}`));
+                                `${pad( Math.floor(i/60) )}:${pad( i%60 )}`));
+                                // `${date_str} ${pad( Math.floor(i/60) )}:${pad( i%60 )}`));
                         else
                             select.append(new Option(
                                 `${pad( Math.floor((i-24*60)/60) )}:${pad( i%60 )}`, 
-                                `${tomorrow_str} ${pad( Math.floor((i-24*60)/60) )}:${pad( i%60 )}`));
+                                `${pad( Math.floor((i-24*60)/60) )}:${pad( i%60 )}`));
+                                // `${tomorrow_str} ${pad( Math.floor((i-24*60)/60) )}:${pad( i%60 )}`));
                     }
                 }
             }
         }
     }
 
-    function getCoords(elem) { // crossbrowser version
-        var box = elem[0].getBoundingClientRect();
-    
-        var body = document.body;
-        var docEl = document.documentElement;
-    
-        var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
-        var scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
-    
-        var clientTop = docEl.clientTop || body.clientTop || 0;
-        var clientLeft = docEl.clientLeft || body.clientLeft || 0;
-    
-        var top  = box.top +  scrollTop - clientTop;
-        var left = box.left + scrollLeft - clientLeft;
-    
-        return { top: Math.round(top), left: Math.round(left) };
+    function OnDateScroll(event) {
+        var st = $(selectObj).scrollTop();
+        var totalheight = selectObj.find("option").length * singleoptionheight;
+        if (st > lastScrollTop) {
+            currentScroll = st + selectboxheight;
+            if ((currentScroll + (numOfOptionBeforeToLoadNextSet * singleoptionheight)) >= totalheight) {
+                LoadNextSetOfOptions();
+            }
+        }
+        lastScrollTop = st;
     }
+
+    function LoadNextSetOfOptions(count = 10) {
+        for (i = 1; i < 10; i++) {
+            let y = new Intl.DateTimeFormat('ru', { year: 'numeric' }).format(nextScrollDate);
+            let m = new Intl.DateTimeFormat('ru', { month: '2-digit' }).format(nextScrollDate);
+            let d = new Intl.DateTimeFormat('ru', { day: '2-digit' }).format(nextScrollDate);
+
+            let number = new Intl.DateTimeFormat('ru', { day: 'numeric' }).format(nextScrollDate);
+            let month = new Intl.DateTimeFormat('ru', { month: 'long' }).format(nextScrollDate);
+            let weekDay = new Intl.DateTimeFormat('ru', { weekday: 'long' }).format(nextScrollDate);
+            
+            let showDate = (count==0) ? 'Сегодня' : ((count==1)?'Завтра':`${number} ${month}, ${weekDay}`);
+
+            $(selectObj).append(new Option(showDate, `${d}.${m}.${y}`));
+
+            nextScrollDate.setDate( nextScrollDate.getDate()+1 );
+
+            dateSelected = '';
+            count++;
+        }
+      
+        $(selectObj).scrollTop(currentScroll - (selectboxheight));
+    }
+
+    // function getCoords(elem) { // crossbrowser version
+    //     var box = elem[0].getBoundingClientRect();
+    
+    //     var body = document.body;
+    //     var docEl = document.documentElement;
+    
+    //     var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
+    //     var scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
+    
+    //     var clientTop = docEl.clientTop || body.clientTop || 0;
+    //     var clientLeft = docEl.clientLeft || body.clientLeft || 0;
+    
+    //     var top  = box.top +  scrollTop - clientTop;
+    //     var left = box.left + scrollLeft - clientLeft;
+    
+    //     return { top: Math.round(top), left: Math.round(left) };
+    // }
+
 });
 
