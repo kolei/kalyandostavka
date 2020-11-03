@@ -1,4 +1,4 @@
-window.script_version = 36;
+window.script_version = 37;
 
 class UserData {
     props = {
@@ -416,10 +416,10 @@ $(document).ready(function ()
             selectObj.empty();
 
             // лайфхак для скрытия списка после выбора
-            selectObj.mousedown( function(){ if(this.options.length>8) this.size=8; });
-            selectObj.blur( function(){ this.size=0; });
+            //selectObj.mousedown( function(){ if(this.options.length>8) this.size=8; });
+            //selectObj.blur( function(){ this.size=0; });
             selectObj.change( function(){ 
-                this.size=0; 
+                //this.size=0; 
 
                 if(selectObj.find(":selected").index()==0){
                     let selTime = $("select[name='time']").val();
