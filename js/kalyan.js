@@ -1,4 +1,4 @@
-window.script_version = 37;
+window.script_version = 38;
 
 class UserData {
     props = {
