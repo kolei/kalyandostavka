@@ -310,7 +310,7 @@ $(document).ready(function ()
 
     var DEV_MODE = true;
     window.BRAND_CODE = '100000014';
-    if(window.location.hostname == 'kalyandostavka-prod.ru'){
+    if(window.location.hostname == 'kalyandostavka.ru'){
         window.CHAIHONA_HOST = 'https://chaihona1.ru';
         DEV_MODE = false;
     }
