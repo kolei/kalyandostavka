@@ -424,15 +424,17 @@ $(document).ready(function ()
                 //this.size=0; 
 
                 if(selectObj.find(":selected").index()==0){
-                    // выбрали "сегодня" - переформировываю время
-                    setDeliveryTime(delivery_work_time, delivery_minutes);
-
                     let selTime = $("select[name='time']").val();
                     let curTime = (new Date()).getHours();
-        
+
+                    // выбрали "сегодня" - переформировываю время
+                    setDeliveryTime(delivery_work_time, delivery_minutes);
+                    
                     if(parseInt(selTime.substring(0, 2)) < curTime){
                         $("select[name='time'] :nth-child(1)").prop('selected', true); 
-                    }        
+                    } else {
+                        $(`select[name='time'] option[value='${selTime}']`).prop("selected", true);
+                    }
                 } else {
                     let selTime = $("select[name='time']").val();
 
