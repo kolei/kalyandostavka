@@ -1,4 +1,4 @@
-window.script_version = 38;
+window.script_version = 39;
 
 class UserData {
     props = {
@@ -1023,7 +1023,9 @@ $(document).ready(function ()
     }
 
     function LoadNextSetOfOptions(count = 10) {
-        for (i = 1; i < 10; i++) {
+        let limit = (count==0) ? 30 : 10;
+
+        for (i = 1; i < limit; i++) {
             let y = new Intl.DateTimeFormat('ru', { year: 'numeric' }).format(nextScrollDate);
             let m = new Intl.DateTimeFormat('ru', { month: '2-digit' }).format(nextScrollDate);
             let d = new Intl.DateTimeFormat('ru', { day: '2-digit' }).format(nextScrollDate);
