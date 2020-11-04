@@ -1,4 +1,4 @@
-window.script_version = 41;
+window.script_version = 42;
 
 class UserData {
     props = {
@@ -433,9 +433,14 @@ $(document).ready(function ()
                     if(parseInt(selTime.substring(0, 2)) < curTime){
                         $("select[name='time'] :nth-child(1)").prop('selected', true); 
                     }        
-                } else
+                } else {
+                    let selTime = $("select[name='time']").val();
+
                     // "завтра" уже доступны любые рабочие часы
                     setDeliveryTime(delivery_work_time, delivery_minutes);
+
+                    $(`select[name='time'] option[value='${selTime}']`).prop("selected", true);
+                }
             });
                 
             LoadNextSetOfOptions(0);            
