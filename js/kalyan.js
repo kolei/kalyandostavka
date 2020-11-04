@@ -1,4 +1,4 @@
-window.script_version = 40;
+window.script_version = 41;
 
 class UserData {
     props = {
@@ -328,6 +328,8 @@ $(document).ready(function ()
     // может поменяться при проверке адреса
     var delivery_min_sum = 1500;
     var delivery_cost = 0;
+    var delivery_work_time = '11:00-05:00';
+    var delivery_minutes = 100;
     var errorSet = new Set();
 
     // бесконечная прокрутка даты
@@ -422,13 +424,18 @@ $(document).ready(function ()
                 //this.size=0; 
 
                 if(selectObj.find(":selected").index()==0){
+                    // выбрали "сегодня" - переформировываю время
+                    setDeliveryTime(delivery_work_time, delivery_minutes);
+
                     let selTime = $("select[name='time']").val();
                     let curTime = (new Date()).getHours();
         
                     if(parseInt(selTime.substring(0, 2)) < curTime){
                         $("select[name='time'] :nth-child(1)").prop('selected', true); 
                     }        
-                }
+                } else
+                    // "завтра" уже доступны любые рабочие часы
+                    setDeliveryTime(delivery_work_time, delivery_minutes);
             });
                 
             LoadNextSetOfOptions(0);            
@@ -524,7 +531,9 @@ $(document).ready(function ()
 
             hideAllErrors();
             hideBottomError('js-rule-error-all');
-            
+            //TODO неверный адрес, сбрасывать при нахождении
+            hideBottomError('js-rule-error-minlength');
+
             let firstErrorElement = null;
 
             if(ud.props.jsonAddress && !ud.props.jsonAddress.house){
@@ -587,7 +596,10 @@ $(document).ready(function ()
             let total_price = $('div.t706__cartwin-prodamount-wrap span.t706__cartwin-prodamount').text();
             let delivery_date = $("#form208707357 select[name='date']").val();
             let delivery_time = $("#form208707357 select[name='time']").val();
-            
+
+            // now к дате цеплять нельзя
+            let target_time_date = (delivery_time == 'now') ? delivery_time : delivery_date + ' ' + delivery_time;
+
             let params=`<input type="hidden" name="phone" value="${purePhone}"/>
                 <input type="hidden" name="name" value="${ud.props.name}"/>
                 <input type="hidden" name="city" value="${ud.props.jsonAddress.city}"/>
@@ -599,7 +611,7 @@ $(document).ready(function ()
                 <input type="hidden" name="delivery_cost" value="${delivery_cost}"/>
                 <input type="hidden" name="payment" value="${payment}"/>
                 <input type="hidden" name="coment" value="${ud.props.coment}"/>
-                <input type="hidden" name="delivery_time" value="${delivery_date} ${delivery_time}"/>
+                <input type="hidden" name="delivery_time" value="${target_time_date}"/>
                 <input type="hidden" name="brand" value="${window.BRAND_CODE}"/>`;
 
             let hasKalyan = false;
@@ -871,6 +883,8 @@ $(document).ready(function ()
                         if(data.work_time){ 
                             setDeliveryTime(data.work_time, parseInt(data.delivery_time));
 
+                            delivery_work_time = data.work_time;
+                            delivery_minutes = parseInt(data.delivery_time);
                             delivery_min_sum = data.delivery_min_sum;
                             delivery_cost = data.delivery_cost;
                             priceObserver.setDeliveryCost(delivery_cost);
@@ -957,10 +971,13 @@ $(document).ready(function ()
         });
     }
 
+    // заполнение списка времени доставки с учетом времени работы ресторана И ДАТЫ
     function setDeliveryTime(work_time, delivery_time){
         let select = $("select[name='time']");
         if(select){
             select.empty();
+
+            let today = (selectObj.find(":selected").index()==0);
 
             let date = new Date();
             let tomorrow = (new Date()).setDate( date.getDate()+1 );
@@ -989,11 +1006,11 @@ $(document).ready(function ()
                 // к текущему времени сразу прибавляю время доставки
                 let begin_time = date.getHours()*60 + date.getMinutes() + delivery_time;
 
-                if(begin_time>start_time)
+                if(today && begin_time>start_time)
                     select.append(new Option('Как можно быстрее', 'now'));
 
                 for (let i = start_time; i < end_time; i+=30){
-                    if(i>=begin_time){
+                    if(!today || i>=begin_time){
                         if(i<24*60)
                             select.append(new Option(
                                 `${pad( Math.floor(i/60) )}:${pad( i%60 )}`, 
