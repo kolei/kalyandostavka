@@ -1,4 +1,4 @@
-window.script_version = 43;
+window.script_version = 44;
 
 class UserData {
     props = {
@@ -401,6 +401,7 @@ $(document).ready(function ()
 
         // принудительно переключаюсь на наличные
         $('input:radio[name="paymentsystem"]').filter('[value="cash"]').attr('checked', true);
+        $('input:radio[name="paymentsystem"]').attr('disabled',true);
 
         // очищаю время доставки
         $("select[name='time']").empty();
