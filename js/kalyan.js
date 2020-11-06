@@ -1,4 +1,4 @@
-window.script_version = 42;
+window.script_version = 43;
 
 class UserData {
     props = {
@@ -398,6 +398,9 @@ $(document).ready(function ()
         $('.t-form__errorbox-text').css("color", "#EB334B");
         $('.t-form__errorbox-wrapper').css("background", "#FFEFC0");
         $('.t-form__errorbox-item').css("font-size", "14px");
+
+        // принудительно переключаюсь на наличные
+        $('input:radio[name="paymentsystem"]').filter('[value="cash"]').attr('checked', true);
 
         // очищаю время доставки
         $("select[name='time']").empty();
