@@ -1,4 +1,4 @@
-window.script_version = 46;
+window.script_version = 47;
 var tilda_form_id = 'form208707357';
 var DEV_MODE = true;
 
@@ -323,8 +323,8 @@ $(document).ready(function ()
     var DEV_MODE = true;
     window.BRAND_CODE = '100000014';
     if(window.location.hostname == 'kalyandostavka.ru'){
-        window.CHAIHONA_HOST = 'https://tilda.dev.chaihona1.ru';
-        //DEV_MODE = false;
+        window.CHAIHONA_HOST = 'https://chaihona1.ru';
+        DEV_MODE = false;
     }
     else if(window.location.hostname == 'kalyan.kei.ru')
         window.CHAIHONA_HOST = 'https://kei.chaihona1.ru';
