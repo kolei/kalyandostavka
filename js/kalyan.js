@@ -1,4 +1,4 @@
-window.script_version = 45;
+window.script_version = 46;
 var tilda_form_id = 'form208707357';
 var DEV_MODE = true;
 
@@ -323,7 +323,7 @@ $(document).ready(function ()
     var DEV_MODE = true;
     window.BRAND_CODE = '100000014';
     if(window.location.hostname == 'kalyandostavka.ru'){
-        window.CHAIHONA_HOST = 'https://chaihona1.ru';
+        window.CHAIHONA_HOST = 'https://tilda.dev.chaihona1.ru';
         //DEV_MODE = false;
     }
     else if(window.location.hostname == 'kalyan.kei.ru')
@@ -369,7 +369,6 @@ $(document).ready(function ()
         // selectObj = $("select[name='date']");
         // singleoptionheight = selectObj.find("option").height();
         // selectboxheight = selectObj.height();
-
         ud = new UserData();
 
         let cssId = 'jQueryUI_CSS';
