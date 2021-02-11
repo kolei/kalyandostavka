@@ -1,4 +1,4 @@
-window.script_version = 47;
+window.script_version = 48;
 var tilda_form_id = 'form208707357';
 var DEV_MODE = true;
 
@@ -531,7 +531,7 @@ $(document).ready(function ()
         
         // при смене типа оплаты меняю текст кнопки
         $('input:radio[name="paymentsystem"]').change(function() {
-            if( $(this).val()=='cash' ) $('#chaihona_pay button').text('Заказать');
+            if( $(this).val()=='cash' ) $('#chaihona_pay button').text('Оформить');
             else $('#chaihona_pay button').text('Оплатить');
         });
 
@@ -996,6 +996,8 @@ $(document).ready(function ()
                             $(`#${tilda_form_id} input[name='paymentsystem'][value='cloudpayments']`).attr("disabled",true);
                         
                             showBottomError('Обслуживающий ресторан не поддерживает онлайн-оплату', 'js-rule-error-string-online');
+
+                            $('#chaihona_pay button').text('Оформить');
                         }
                         ud.props.department = data.department;
                     }
